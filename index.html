@@ -34,202 +34,12 @@
     overflow: hidden;
   }
 
-  /* ── AUTH SCREEN ─────────────────────────────────────────── */
-  #authScreen {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 9000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: radial-gradient(ellipse at 20% 50%, rgba(0,229,255,0.04) 0%, transparent 60%),
-                      radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.05) 0%, transparent 50%);
-  }
-  #authScreen.hidden { display: none; }
-
-  .auth-card {
-    width: 420px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px;
-    position: relative;
-    overflow: hidden;
-  }
-  .auth-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-
-  .auth-logo {
-    font-family: var(--font-head);
-    font-weight: 800;
-    font-size: 1.6rem;
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-  .auth-logo span { color: var(--text); }
-  .auth-logo-dot {
-    width: 10px; height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-  .auth-subtitle {
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    margin-bottom: 32px;
-  }
-
-  .auth-panel { display: none; }
-  .auth-panel.active { display: block; }
-
-  .auth-heading {
-    font-family: var(--font-head);
-    font-weight: 800;
-    font-size: 1.15rem;
-    margin-bottom: 4px;
-  }
-  .auth-desc {
-    font-size: 0.68rem;
-    color: var(--text-dim);
-    margin-bottom: 24px;
-    line-height: 1.6;
-  }
-
-  .auth-field { margin-bottom: 14px; }
-  .auth-label {
-    display: block;
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
-  .auth-input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 11px 14px;
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .auth-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
-  }
-  .auth-input.error { border-color: var(--red); }
-  .auth-input::placeholder { color: var(--gray); }
-
-  .auth-error {
-    font-size: 0.68rem;
-    color: var(--red);
-    margin-top: 6px;
-    min-height: 18px;
-    display: none;
-  }
-  .auth-error.visible { display: block; }
-
-  .auth-btn {
-    width: 100%;
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    border-radius: 7px;
-    padding: 12px;
-    font-family: var(--font-head);
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    margin-top: 6px;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
-  }
-  .auth-btn:hover { background: #33eaff; transform: translateY(-1px); }
-  .auth-btn:active { transform: translateY(0); }
-  .auth-btn.loading { opacity: 0.7; pointer-events: none; }
-
-  .auth-link {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-  }
-  .auth-link a {
-    color: var(--accent);
-    text-decoration: none;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  .auth-link a:hover { text-decoration: underline; }
-
-  .auth-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 20px 0;
-  }
-
-  /* Reset code box */
-  .reset-code-box {
-    background: rgba(0,229,255,0.06);
-    border: 1px solid rgba(0,229,255,0.25);
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 20px;
-  }
-  .reset-code-label {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--accent);
-    margin-bottom: 6px;
-  }
-  .reset-code-value {
-    font-family: var(--font-head);
-    font-weight: 800;
-    font-size: 1.8rem;
-    letter-spacing: 6px;
-    color: var(--accent);
-  }
-  .reset-code-note {
-    font-size: 0.62rem;
-    color: var(--text-dim);
-    margin-top: 6px;
-    line-height: 1.5;
-  }
-
-  .success-msg {
-    background: rgba(0,245,160,0.08);
-    border: 1px solid rgba(0,245,160,0.2);
-    border-radius: 7px;
-    padding: 10px 14px;
-    font-size: 0.7rem;
-    color: var(--green);
-    margin-bottom: 14px;
-    display: none;
-  }
-  .success-msg.visible { display: block; }
-
-  /* ── APP SHELL ─────────────────────────────────────────────── */
-  #appShell { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-  #appShell.visible { display: flex; }
-
   @keyframes pulse {
     0%,100% { opacity:1; transform:scale(1); }
     50% { opacity:0.5; transform:scale(1.4); }
   }
 
+  /* HEADER */
   header {
     display: flex;
     align-items: center;
@@ -289,73 +99,11 @@
   }
   .btn-add:hover { background: #33eaff; transform: translateY(-1px); }
 
-  /* User menu */
-  .user-menu-wrap { position: relative; }
-  .user-btn {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-  }
-  .user-btn:hover { border-color: var(--accent); }
-  .user-avatar {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-head);
-    font-weight: 700;
-    font-size: 0.7rem;
-    color: var(--bg);
-    flex-shrink: 0;
-  }
-  .user-dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    min-width: 200px;
-    padding: 6px;
-    z-index: 500;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    display: none;
-  }
-  .user-dropdown.open { display: block; }
-  .dropdown-user-info {
-    padding: 8px 10px 10px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 6px;
-  }
-  .dropdown-name { font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; }
-  .dropdown-email { font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; }
-  .dropdown-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    transition: all 0.15s;
-    border: none; background: none; width: 100%; text-align: left;
-    font-family: var(--font-mono);
-  }
-  .dropdown-item:hover { background: var(--surface2); color: var(--text); }
-  .dropdown-item.danger { color: var(--red); }
-  .dropdown-item.danger:hover { background: rgba(244,63,94,0.1); }
-
   /* VIEWS */
   .view { display: none; flex: 1; overflow: hidden; }
   .view.active { display: flex; }
 
-  /* ── INSTALLATIONS TAB ── */
+  /* SIDEBAR */
   .sidebar {
     width: 340px; flex-shrink: 0;
     background: var(--surface);
@@ -421,6 +169,7 @@
 
   #map { flex: 1; background: var(--bg); }
 
+  /* DETAIL PANEL */
   .detail-panel {
     width: 320px; flex-shrink: 0;
     background: var(--surface); border-left: 1px solid var(--border);
@@ -452,7 +201,7 @@
   .btn-delete { background: rgba(244,63,94,0.15); border: 1px solid rgba(244,63,94,0.3); color: var(--red); padding: 9px 14px; border-radius: 6px; font-family: var(--font-head); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
   .btn-delete:hover { background: rgba(244,63,94,0.25); }
 
-  /* ── NATIONAL TAB ── */
+  /* NATIONAL VIEW */
   #nationalView { flex-direction: row; }
   #nationalMap { flex: 1; position: relative; min-width: 0; }
   .map-legend {
@@ -505,7 +254,7 @@
   .alert-name { font-family: var(--font-head); font-weight: 600; font-size: 0.75rem; margin-bottom: 2px; }
   .alert-meta { font-size: 0.62rem; color: var(--text-dim); }
 
-  /* ── INSTALL/EDIT MODAL ── */
+  /* MODAL */
   .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -543,17 +292,6 @@
   .btn-save { background: var(--accent); border: none; color: var(--bg); padding: 9px 22px; border-radius: 6px; font-family: var(--font-head); font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
   .btn-save:hover { background: #33eaff; }
 
-  /* ── CHANGE PASSWORD MODAL ── */
-  #changePwModal {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-    z-index: 3000;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.2s;
-  }
-  #changePwModal.open { opacity: 1; pointer-events: all; }
-  #changePwModal .modal { width: 400px; }
-
   /* Leaflet */
   .leaflet-container { background: #0d1520 !important; }
   .custom-marker { width:32px; height:32px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; cursor:pointer; }
@@ -580,207 +318,76 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!--  AUTH SCREEN                                              -->
-<!-- ══════════════════════════════════════════════════════════ -->
-<div id="authScreen">
-  <div class="auth-card">
-    <div class="auth-logo"><div class="auth-logo-dot"></div>Net<span>Track</span></div>
-    <div class="auth-subtitle">IT/Network Hardware Installation Portal</div>
-
-    <!-- LOGIN -->
-    <div class="auth-panel active" id="panelLogin">
-      <div class="auth-heading">Welcome back</div>
-      <div class="auth-desc">Sign in to access your installation dashboard.</div>
-      <div class="auth-field">
-        <label class="auth-label">Email address</label>
-        <input class="auth-input" id="loginEmail" type="email" placeholder="you@company.com" autocomplete="email">
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">Password</label>
-        <input class="auth-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password">
-      </div>
-      <div class="auth-error" id="loginError"></div>
-      <button class="auth-btn" onclick="doLogin()">Sign In</button>
-      <div class="auth-link"><a onclick="showPanel('panelForgot')">Forgot your password?</a></div>
-      <hr class="auth-divider">
-      <div class="auth-link">No account? <a onclick="showPanel('panelRegister')">Create one</a></div>
-    </div>
-
-    <!-- REGISTER -->
-    <div class="auth-panel" id="panelRegister">
-      <div class="auth-heading">Create account</div>
-      <div class="auth-desc">Register to get access to the NetTrack portal.</div>
-      <div class="form-row" style="gap:10px;margin-bottom:0">
-        <div class="auth-field" style="flex:1">
-          <label class="auth-label">First name</label>
-          <input class="auth-input" id="regFirst" type="text" placeholder="Jane">
-        </div>
-        <div class="auth-field" style="flex:1">
-          <label class="auth-label">Last name</label>
-          <input class="auth-input" id="regLast" type="text" placeholder="Smith">
-        </div>
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">Email address</label>
-        <input class="auth-input" id="regEmail" type="email" placeholder="you@company.com" autocomplete="email">
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">Password</label>
-        <input class="auth-input" id="regPassword" type="password" placeholder="Min. 8 characters" autocomplete="new-password">
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">Confirm password</label>
-        <input class="auth-input" id="regConfirm" type="password" placeholder="••••••••" autocomplete="new-password">
-      </div>
-      <div class="auth-error" id="regError"></div>
-      <button class="auth-btn" onclick="doRegister()">Create Account</button>
-      <hr class="auth-divider">
-      <div class="auth-link">Already have an account? <a onclick="showPanel('panelLogin')">Sign in</a></div>
-    </div>
-
-    <!-- FORGOT PASSWORD -->
-    <div class="auth-panel" id="panelForgot">
-      <div class="auth-heading">Reset password</div>
-      <div class="auth-desc">Enter your email and we'll generate a reset code for you.</div>
-      <div class="auth-field">
-        <label class="auth-label">Email address</label>
-        <input class="auth-input" id="forgotEmail" type="email" placeholder="you@company.com">
-      </div>
-      <div class="auth-error" id="forgotError"></div>
-      <button class="auth-btn" onclick="doForgot()">Send Reset Code</button>
-      <hr class="auth-divider">
-      <div class="auth-link"><a onclick="showPanel('panelLogin')">← Back to sign in</a></div>
-    </div>
-
-    <!-- RESET CODE (shown after forgot) -->
-    <div class="auth-panel" id="panelResetCode">
-      <div class="auth-heading">Your reset code</div>
-      <div class="auth-desc">In a live deployment this would be emailed. For now, copy this code to reset your password.</div>
-      <div class="reset-code-box">
-        <div class="reset-code-label">Reset Code</div>
-        <div class="reset-code-value" id="displayedResetCode">——————</div>
-        <div class="reset-code-note">This code is valid for this session only. Enter it on the next screen.</div>
-      </div>
-      <button class="auth-btn" onclick="showPanel('panelResetNew')">I have my code →</button>
-    </div>
-
-    <!-- NEW PASSWORD -->
-    <div class="auth-panel" id="panelResetNew">
-      <div class="auth-heading">Set new password</div>
-      <div class="auth-desc">Enter the reset code and choose a new password.</div>
-      <div class="success-msg" id="resetSuccess">Password updated! You can now sign in.</div>
-      <div class="auth-field">
-        <label class="auth-label">Reset code</label>
-        <input class="auth-input" id="resetCode" type="text" placeholder="Enter 6-digit code" maxlength="6">
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">New password</label>
-        <input class="auth-input" id="resetNewPw" type="password" placeholder="Min. 8 characters">
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">Confirm new password</label>
-        <input class="auth-input" id="resetConfirm" type="password" placeholder="••••••••">
-      </div>
-      <div class="auth-error" id="resetError"></div>
-      <button class="auth-btn" onclick="doReset()">Update Password</button>
-      <hr class="auth-divider">
-      <div class="auth-link"><a onclick="showPanel('panelLogin')">← Back to sign in</a></div>
-    </div>
-
+<header>
+  <div class="logo"><div class="logo-dot"></div>Net<span>Track</span></div>
+  <div class="header-center">
+    <button class="tab-btn active" id="tabDetail" onclick="switchTab('detail')">📍 Installations</button>
+    <button class="tab-btn" id="tabNational" onclick="switchTab('national')">🌐 National Overview</button>
   </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════ -->
-<!--  APP SHELL                                                -->
-<!-- ══════════════════════════════════════════════════════════ -->
-<div id="appShell">
-  <header>
-    <div class="logo"><div class="logo-dot"></div>Net<span>Track</span></div>
-    <div class="header-center">
-      <button class="tab-btn active" id="tabDetail" onclick="switchTab('detail')">📍 Installations</button>
-      <button class="tab-btn" id="tabNational" onclick="switchTab('national')">🌐 National Overview</button>
-    </div>
-    <div class="header-right">
-      <div class="header-stats" id="headerStats"></div>
-      <button class="btn-add" onclick="openModal()">+ Add Installation</button>
-      <div class="user-menu-wrap">
-        <div class="user-btn" onclick="toggleUserMenu()">
-          <div class="user-avatar" id="userAvatar">?</div>
-          <span id="userDisplayName">User</span>
-          <span style="color:var(--text-dim);font-size:0.6rem">▾</span>
-        </div>
-        <div class="user-dropdown" id="userDropdown">
-          <div class="dropdown-user-info">
-            <div class="dropdown-name" id="dropdownName">—</div>
-            <div class="dropdown-email" id="dropdownEmail">—</div>
-          </div>
-          <button class="dropdown-item" onclick="openChangePw()">🔑 Change Password</button>
-          <button class="dropdown-item danger" onclick="doLogout()">↩ Sign Out</button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- INSTALLATIONS VIEW -->
-  <div class="view active" id="detailView">
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <input class="search-box" type="text" placeholder="Search installations..." id="searchInput" oninput="filterCards()">
-        <div class="filter-row">
-          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
-          <button class="filter-btn" data-filter="active" onclick="setFilter('active',this)">Active</button>
-          <button class="filter-btn" data-filter="pending" onclick="setFilter('pending',this)">Pending</button>
-          <button class="filter-btn" data-filter="offline" onclick="setFilter('offline',this)">Offline</button>
-          <button class="filter-btn" data-filter="maintenance" onclick="setFilter('maintenance',this)">Maint.</button>
-        </div>
-      </div>
-      <div class="installations-list" id="installationsList"></div>
-    </div>
-    <div id="map"></div>
-    <div class="detail-panel" id="detailPanel">
-      <div class="detail-header">
-        <div class="detail-title" id="detailName">—</div>
-        <button class="btn-close" onclick="closeDetail()">✕</button>
-      </div>
-      <div class="detail-body" id="detailBody"></div>
-      <div class="detail-actions">
-        <button class="btn-edit" id="detailEditBtn">Edit Installation</button>
-        <button class="btn-delete" id="detailDeleteBtn">Delete</button>
-      </div>
-    </div>
+  <div class="header-right">
+    <div class="header-stats" id="headerStats"></div>
+    <button class="btn-add" onclick="openModal()">+ Add Installation</button>
   </div>
+</header>
 
-  <!-- NATIONAL VIEW -->
-  <div class="view" id="nationalView">
-    <div id="nationalMap">
-      <div class="map-legend">
-        <div class="map-legend-title">Status</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#00f5a0"></div>Active</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Pending</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#f43f5e"></div>Offline</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Maintenance</div>
+<!-- INSTALLATIONS VIEW -->
+<div class="view active" id="detailView">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <input class="search-box" type="text" placeholder="Search installations..." id="searchInput" oninput="filterCards()">
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" data-filter="active" onclick="setFilter('active',this)">Active</button>
+        <button class="filter-btn" data-filter="pending" onclick="setFilter('pending',this)">Pending</button>
+        <button class="filter-btn" data-filter="offline" onclick="setFilter('offline',this)">Offline</button>
+        <button class="filter-btn" data-filter="maintenance" onclick="setFilter('maintenance',this)">Maint.</button>
       </div>
     </div>
-    <div class="national-sidebar">
-      <div class="national-sidebar-header">
-        <div class="national-sidebar-title">Network Health</div>
-        <div class="national-sidebar-sub">Real-time overview of all installations</div>
-      </div>
-      <div class="big-stats" id="bigStats"></div>
-      <div class="health-section">
-        <div class="health-label"><span>Fleet Health</span><span id="healthPct">—</span></div>
-        <div class="health-bar" id="healthBar"></div>
-      </div>
-      <div class="alerts-section">
-        <div class="alerts-title">Attention Required</div>
-        <div id="alertsList"></div>
-      </div>
+    <div class="installations-list" id="installationsList"></div>
+  </div>
+  <div id="map"></div>
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-header">
+      <div class="detail-title" id="detailName">—</div>
+      <button class="btn-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+    <div class="detail-actions">
+      <button class="btn-edit" id="detailEditBtn">Edit Installation</button>
+      <button class="btn-delete" id="detailDeleteBtn">Delete</button>
     </div>
   </div>
 </div>
 
-<!-- INSTALL MODAL -->
+<!-- NATIONAL VIEW -->
+<div class="view" id="nationalView">
+  <div id="nationalMap">
+    <div class="map-legend">
+      <div class="map-legend-title">Status</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#00f5a0"></div>Active</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Pending</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f43f5e"></div>Offline</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Maintenance</div>
+    </div>
+  </div>
+  <div class="national-sidebar">
+    <div class="national-sidebar-header">
+      <div class="national-sidebar-title">Network Health</div>
+      <div class="national-sidebar-sub">Real-time overview of all installations</div>
+    </div>
+    <div class="big-stats" id="bigStats"></div>
+    <div class="health-section">
+      <div class="health-label"><span>Fleet Health</span><span id="healthPct">—</span></div>
+      <div class="health-bar" id="healthBar"></div>
+    </div>
+    <div class="alerts-section">
+      <div class="alerts-title">Attention Required</div>
+      <div id="alertsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-header">
@@ -796,8 +403,10 @@
         <div class="form-group" style="flex:2"><label class="form-label">Address / Location *</label><input class="form-input" id="f-address" placeholder="123 Main St, City, State"></div>
         <div class="form-group"><label class="form-label">Status *</label>
           <select class="form-select" id="f-status">
-            <option value="active">Active</option><option value="pending">Pending</option>
-            <option value="offline">Offline</option><option value="maintenance">Maintenance</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="offline">Offline</option>
+            <option value="maintenance">Maintenance</option>
           </select>
         </div>
       </div>
@@ -824,232 +433,9 @@
   </div>
 </div>
 
-<!-- CHANGE PASSWORD MODAL -->
-<div id="changePwModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Change Password</div>
-      <button class="btn-close" onclick="closeChangePw()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="success-msg" id="changePwSuccess">Password changed successfully!</div>
-      <div class="auth-field">
-        <label class="auth-label">Current password</label>
-        <input class="auth-input" id="cpCurrent" type="password" placeholder="••••••••">
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">New password</label>
-        <input class="auth-input" id="cpNew" type="password" placeholder="Min. 8 characters">
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">Confirm new password</label>
-        <input class="auth-input" id="cpConfirm" type="password" placeholder="••••••••">
-      </div>
-      <div class="auth-error" id="changePwError"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeChangePw()">Cancel</button>
-      <button class="btn-save" onclick="doChangePw()">Update Password</button>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-// ══════════════════════════════════════════════════════════════
-//  AUTH
-// ══════════════════════════════════════════════════════════════
-const USERS_KEY = 'nettrack_users';
-const SESSION_KEY = 'nettrack_session';
-
-function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
-function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
-function getSession() { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); }
-function setSession(u) { sessionStorage.setItem(SESSION_KEY, JSON.stringify(u)); }
-function clearSession() { sessionStorage.removeItem(SESSION_KEY); }
-
-// Simple hash (not cryptographic — fine for local-only demo)
-function hashPw(pw) {
-  let h = 0;
-  for (let i = 0; i < pw.length; i++) { h = (Math.imul(31, h) + pw.charCodeAt(i)) | 0; }
-  return h.toString(16);
-}
-
-let pendingResetEmail = null;
-let pendingResetCode = null;
-
-function showPanel(id) {
-  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  // Clear errors
-  document.querySelectorAll('.auth-error').forEach(e => { e.textContent=''; e.classList.remove('visible'); });
-  document.querySelectorAll('.auth-input').forEach(i => i.classList.remove('error'));
-}
-
-function showAuthError(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.classList.add('visible');
-}
-
-function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const pw = document.getElementById('loginPassword').value;
-  if (!email || !pw) { showAuthError('loginError', 'Please fill in all fields.'); return; }
-  const users = getUsers();
-  const user = users.find(u => u.email === email);
-  if (!user || user.pwHash !== hashPw(pw)) {
-    showAuthError('loginError', 'Invalid email or password.');
-    document.getElementById('loginPassword').classList.add('error');
-    return;
-  }
-  setSession(user);
-  launchApp(user);
-}
-
-function doRegister() {
-  const first = document.getElementById('regFirst').value.trim();
-  const last = document.getElementById('regLast').value.trim();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
-  const pw = document.getElementById('regPassword').value;
-  const confirm = document.getElementById('regConfirm').value;
-  if (!first || !last || !email || !pw) { showAuthError('regError', 'Please fill in all fields.'); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAuthError('regError', 'Please enter a valid email address.'); return; }
-  if (pw.length < 8) { showAuthError('regError', 'Password must be at least 8 characters.'); return; }
-  if (pw !== confirm) { showAuthError('regError', 'Passwords do not match.'); return; }
-  const users = getUsers();
-  if (users.find(u => u.email === email)) { showAuthError('regError', 'An account with this email already exists.'); return; }
-  const user = { id: Date.now().toString(), firstName: first, lastName: last, email, pwHash: hashPw(pw) };
-  users.push(user);
-  saveUsers(users);
-  setSession(user);
-  launchApp(user);
-}
-
-function doForgot() {
-  const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
-  if (!email) { showAuthError('forgotError', 'Please enter your email address.'); return; }
-  const users = getUsers();
-  const user = users.find(u => u.email === email);
-  if (!user) { showAuthError('forgotError', 'No account found with that email.'); return; }
-  // Generate 6-digit code
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  pendingResetEmail = email;
-  pendingResetCode = code;
-  document.getElementById('displayedResetCode').textContent = code;
-  showPanel('panelResetCode');
-}
-
-function doReset() {
-  const code = document.getElementById('resetCode').value.trim();
-  const newPw = document.getElementById('resetNewPw').value;
-  const confirm = document.getElementById('resetConfirm').value;
-  if (!code || !newPw || !confirm) { showAuthError('resetError', 'Please fill in all fields.'); return; }
-  if (code !== pendingResetCode) { showAuthError('resetError', 'Incorrect reset code. Please try again.'); return; }
-  if (newPw.length < 8) { showAuthError('resetError', 'Password must be at least 8 characters.'); return; }
-  if (newPw !== confirm) { showAuthError('resetError', 'Passwords do not match.'); return; }
-  const users = getUsers();
-  const idx = users.findIndex(u => u.email === pendingResetEmail);
-  if (idx === -1) { showAuthError('resetError', 'Something went wrong. Please try again.'); return; }
-  users[idx].pwHash = hashPw(newPw);
-  saveUsers(users);
-  pendingResetEmail = null;
-  pendingResetCode = null;
-  document.getElementById('resetSuccess').classList.add('visible');
-  document.getElementById('resetCode').value = '';
-  document.getElementById('resetNewPw').value = '';
-  document.getElementById('resetConfirm').value = '';
-  setTimeout(() => showPanel('panelLogin'), 1800);
-}
-
-function doLogout() {
-  clearSession();
-  document.getElementById('appShell').classList.remove('visible');
-  document.getElementById('authScreen').classList.remove('hidden');
-  showPanel('panelLogin');
-  document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPassword').value = '';
-  closeUserMenu();
-}
-
-function launchApp(user) {
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('appShell').classList.add('visible');
-  // Set user info in header
-  const initials = (user.firstName[0] + user.lastName[0]).toUpperCase();
-  document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('userDisplayName').textContent = user.firstName;
-  document.getElementById('dropdownName').textContent = user.firstName + ' ' + user.lastName;
-  document.getElementById('dropdownEmail').textContent = user.email;
-  // Init maps on first launch
-  setTimeout(() => { map.invalidateSize(); renderAll(); }, 100);
-}
-
-// Check for existing session on load
-window.addEventListener('DOMContentLoaded', () => {
-  const session = getSession();
-  if (session) {
-    launchApp(session);
-  }
-});
-
-// Enter key support on auth inputs
-document.getElementById('loginPassword').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-document.getElementById('loginEmail').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-document.getElementById('regConfirm').addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
-document.getElementById('resetConfirm').addEventListener('keydown', e => { if(e.key==='Enter') doReset(); });
-
-// User dropdown
-function toggleUserMenu() {
-  document.getElementById('userDropdown').classList.toggle('open');
-}
-function closeUserMenu() {
-  document.getElementById('userDropdown').classList.remove('open');
-}
-document.addEventListener('click', e => {
-  if (!e.target.closest('.user-menu-wrap')) closeUserMenu();
-});
-
-// Change password
-function openChangePw() {
-  closeUserMenu();
-  document.getElementById('cpCurrent').value = '';
-  document.getElementById('cpNew').value = '';
-  document.getElementById('cpConfirm').value = '';
-  document.getElementById('changePwError').textContent = '';
-  document.getElementById('changePwError').classList.remove('visible');
-  document.getElementById('changePwSuccess').classList.remove('visible');
-  document.getElementById('changePwModal').classList.add('open');
-}
-function closeChangePw() {
-  document.getElementById('changePwModal').classList.remove('open');
-}
-function doChangePw() {
-  const current = document.getElementById('cpCurrent').value;
-  const newPw = document.getElementById('cpNew').value;
-  const confirm = document.getElementById('cpConfirm').value;
-  const errEl = document.getElementById('changePwError');
-  errEl.textContent = ''; errEl.classList.remove('visible');
-  if (!current || !newPw || !confirm) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('visible'); return; }
-  const session = getSession();
-  const users = getUsers();
-  const idx = users.findIndex(u => u.id === session.id);
-  if (idx === -1 || users[idx].pwHash !== hashPw(current)) {
-    errEl.textContent = 'Current password is incorrect.'; errEl.classList.add('visible'); return;
-  }
-  if (newPw.length < 8) { errEl.textContent = 'New password must be at least 8 characters.'; errEl.classList.add('visible'); return; }
-  if (newPw !== confirm) { errEl.textContent = 'New passwords do not match.'; errEl.classList.add('visible'); return; }
-  users[idx].pwHash = hashPw(newPw);
-  saveUsers(users);
-  setSession(users[idx]);
-  document.getElementById('changePwSuccess').classList.add('visible');
-  setTimeout(() => closeChangePw(), 1600);
-}
-document.getElementById('changePwModal').addEventListener('click', function(e) { if(e.target===this) closeChangePw(); });
-
-// ══════════════════════════════════════════════════════════════
-//  DATA
-// ══════════════════════════════════════════════════════════════
+// ── DATA ──────────────────────────────────────────────────────
 const STORAGE_KEY = 'nettrack_installations';
 const SAMPLE_DATA = [
   { id:1, name:'Core Switch HQ', type:'Cisco Catalyst 9300', address:'350 Fifth Ave, New York, NY', status:'active', team:'Network Ops Team A', contact:'Marcus Johnson', installDate:'2023-03-15', maintDate:'2025-06-01', lat:40.7484, lng:-73.9856, notes:'Primary core switch for HQ building.' },
@@ -1063,6 +449,7 @@ const SAMPLE_DATA = [
   { id:9, name:'Relay — Seattle', type:'Cisco ASR 9000', address:'401 5th Ave, Seattle, WA', status:'active', team:'West Coast Ops', contact:'Lena Brooks', installDate:'2023-04-05', maintDate:'2025-11-01', lat:47.6062, lng:-122.3321, notes:'Pacific Northwest relay node.' },
   { id:10, name:'Edge Node — Miami', type:'Nokia 7750', address:'444 Brickell Ave, Miami, FL', status:'offline', team:'South Ops', contact:'Carlos Diaz', installDate:'2022-03-15', maintDate:'2024-09-01', lat:25.7617, lng:-80.1918, notes:'Storm damage reported. Awaiting parts.' },
 ];
+
 function loadData() {
   const s = localStorage.getItem(STORAGE_KEY);
   if (s) return JSON.parse(s);
@@ -1081,14 +468,13 @@ let nationalMapInited = false;
 let nationalMapObj = null;
 let currentTab = 'detail';
 
-// ══════════════════════════════════════════════════════════════
-//  MAPS
-// ══════════════════════════════════════════════════════════════
-const map = L.map('map', { zoomControl: false }).setView([40.73,-73.95], 11);
-L.control.zoom({ position:'bottomright' }).addTo(map);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap' }).addTo(map);
+// ── MAPS ──────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: false }).setView([40.73, -73.95], 11);
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
 
 const statusClassMap = { active:'active-m', pending:'pending-m', offline:'offline-m', maintenance:'maintenance-m' };
+
 function createMarkerIcon(s) {
   return L.divIcon({ className:'', html:`<div class="custom-marker ${statusClassMap[s]}"><span class="icon">📡</span></div>`, iconSize:[32,32], iconAnchor:[16,32], popupAnchor:[0,-34] });
 }
@@ -1098,42 +484,40 @@ function createNationalMarkerIcon(s) {
 
 function initNationalMap() {
   if (nationalMapInited) return;
-  nationalMapObj = L.map('nationalMap', { zoomControl:false }).setView([39.5,-98.35], 4);
-  L.control.zoom({ position:'bottomright' }).addTo(nationalMapObj);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap' }).addTo(nationalMapObj);
+  nationalMapObj = L.map('nationalMap', { zoomControl: false }).setView([39.5, -98.35], 4);
+  L.control.zoom({ position: 'bottomright' }).addTo(nationalMapObj);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(nationalMapObj);
   nationalMapInited = true;
   renderNationalMarkers();
 }
+
 function renderNationalMarkers() {
   if (!nationalMapObj) return;
   Object.values(nationalMarkers).forEach(m => nationalMapObj.removeLayer(m));
   nationalMarkers = {};
   installations.forEach(inst => {
     if (!inst.lat || !inst.lng) return;
-    const m = L.marker([inst.lat,inst.lng],{icon:createNationalMarkerIcon(inst.status)}).addTo(nationalMapObj);
+    const m = L.marker([inst.lat, inst.lng], { icon: createNationalMarkerIcon(inst.status) }).addTo(nationalMapObj);
     m.bindPopup(`<div class="popup-name">${inst.name}</div><div class="popup-addr">${inst.address}</div><div style="margin-bottom:6px"><span class="status-badge status-${inst.status}">${inst.status.toUpperCase()}</span></div><button class="popup-open" onclick="goToInstallation(${inst.id})">Open Detail View</button>`);
     nationalMarkers[inst.id] = m;
   });
 }
+
 function goToInstallation(id) { switchTab('detail'); setTimeout(() => selectInstallation(id), 120); }
 
-// ══════════════════════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════════════════════
+// ── TABS ──────────────────────────────────────────────────────
 function switchTab(tab) {
   currentTab = tab;
-  document.getElementById('detailView').classList.toggle('active', tab==='detail');
-  document.getElementById('nationalView').classList.toggle('active', tab==='national');
-  document.getElementById('tabDetail').classList.toggle('active', tab==='detail');
-  document.getElementById('tabNational').classList.toggle('active', tab==='national');
-  if (tab==='national') {
+  document.getElementById('detailView').classList.toggle('active', tab === 'detail');
+  document.getElementById('nationalView').classList.toggle('active', tab === 'national');
+  document.getElementById('tabDetail').classList.toggle('active', tab === 'detail');
+  document.getElementById('tabNational').classList.toggle('active', tab === 'national');
+  if (tab === 'national') {
     setTimeout(() => { initNationalMap(); nationalMapObj.invalidateSize(); renderNationalMarkers(); renderNationalStats(); renderAlerts(); }, 60);
   }
 }
 
-// ══════════════════════════════════════════════════════════════
-//  NATIONAL STATS
-// ══════════════════════════════════════════════════════════════
+// ── NATIONAL STATS ────────────────────────────────────────────
 function renderNationalStats() {
   const c = { active:0, pending:0, offline:0, maintenance:0 };
   installations.forEach(i => c[i.status]++);
@@ -1144,72 +528,82 @@ function renderNationalStats() {
     <div class="big-stat s-pending"><div class="big-stat-num">${c.pending}</div><div class="big-stat-label">Pending</div></div>
     <div class="big-stat s-offline"><div class="big-stat-num">${c.offline}</div><div class="big-stat-label">Offline</div></div>
     <div class="big-stat s-maintenance"><div class="big-stat-num">${c.maintenance}</div><div class="big-stat-label">Maintenance</div></div>`;
-  const pct = total ? Math.round((c.active/total)*100) : 0;
+  const pct = total ? Math.round((c.active / total) * 100) : 0;
   document.getElementById('healthPct').textContent = `${pct}% healthy`;
   const segs = [{color:'#00f5a0',count:c.active},{color:'#fbbf24',count:c.pending},{color:'#a78bfa',count:c.maintenance},{color:'#f43f5e',count:c.offline}];
-  document.getElementById('healthBar').innerHTML = segs.filter(s=>s.count>0).map(s=>`<div class="health-segment" style="width:${(s.count/total)*100}%;background:${s.color}"></div>`).join('');
+  document.getElementById('healthBar').innerHTML = segs.filter(s => s.count > 0).map(s => `<div class="health-segment" style="width:${(s.count/total)*100}%;background:${s.color}"></div>`).join('');
 }
+
 function renderAlerts() {
-  const na = installations.filter(i=>i.status!=='active');
+  const na = installations.filter(i => i.status !== 'active');
   const colors = { offline:'#f43f5e', maintenance:'#a78bfa', pending:'#fbbf24' };
   const list = document.getElementById('alertsList');
-  if (!na.length) { list.innerHTML=`<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon">✅</div>All systems healthy!</div>`; return; }
-  na.sort((a,b)=>({offline:0,maintenance:1,pending:2}[a.status]||3)-({offline:0,maintenance:1,pending:2}[b.status]||3));
-  list.innerHTML = na.map(i=>`
+  if (!na.length) { list.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon">✅</div>All systems healthy!</div>`; return; }
+  na.sort((a,b) => ({offline:0,maintenance:1,pending:2}[a.status]||3) - ({offline:0,maintenance:1,pending:2}[b.status]||3));
+  list.innerHTML = na.map(i => `
     <div class="alert-item" onclick="goToInstallation(${i.id})">
       <div class="alert-dot" style="background:${colors[i.status]}"></div>
       <div><div class="alert-name">${i.name}</div><div class="alert-meta">${i.address}</div><div style="margin-top:4px"><span class="status-badge status-${i.status}">${i.status}</span></div></div>
     </div>`).join('');
 }
 
-// ══════════════════════════════════════════════════════════════
-//  DETAIL VIEW
-// ══════════════════════════════════════════════════════════════
+// ── RENDER ────────────────────────────────────────────────────
 function renderAll() {
   installations = loadData();
   renderCards(); renderMarkers(); renderHeaderStats();
-  if (currentTab==='national' && nationalMapInited) { renderNationalMarkers(); renderNationalStats(); renderAlerts(); }
+  if (currentTab === 'national' && nationalMapInited) { renderNationalMarkers(); renderNationalStats(); renderAlerts(); }
 }
+
 function renderHeaderStats() {
-  const c={active:0,pending:0,offline:0,maintenance:0};
-  installations.forEach(i=>c[i.status]++);
-  const cols={active:'#00f5a0',pending:'#fbbf24',offline:'#f43f5e',maintenance:'#a78bfa'};
-  document.getElementById('headerStats').innerHTML=Object.entries(c).map(([k,v])=>`<div class="stat-pill"><div class="stat-dot" style="background:${cols[k]}"></div>${k} <span class="stat-num">${v}</span></div>`).join('');
+  const c = { active:0, pending:0, offline:0, maintenance:0 };
+  installations.forEach(i => c[i.status]++);
+  const cols = { active:'#00f5a0', pending:'#fbbf24', offline:'#f43f5e', maintenance:'#a78bfa' };
+  document.getElementById('headerStats').innerHTML = Object.entries(c).map(([k,v]) =>
+    `<div class="stat-pill"><div class="stat-dot" style="background:${cols[k]}"></div>${k} <span class="stat-num">${v}</span></div>`).join('');
 }
+
 function getFiltered() {
-  const q=document.getElementById('searchInput').value.toLowerCase();
-  return installations.filter(i=>(currentFilter==='all'||i.status===currentFilter)&&(!q||i.name.toLowerCase().includes(q)||i.address.toLowerCase().includes(q)||(i.team||'').toLowerCase().includes(q)));
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  return installations.filter(i =>
+    (currentFilter === 'all' || i.status === currentFilter) &&
+    (!q || i.name.toLowerCase().includes(q) || i.address.toLowerCase().includes(q) || (i.team||'').toLowerCase().includes(q))
+  );
 }
+
 function renderCards() {
-  const list=document.getElementById('installationsList');
-  const f=getFiltered();
-  if(!f.length){list.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📡</div>No installations found.</div>`;return;}
-  list.innerHTML=f.map(i=>`
+  const list = document.getElementById('installationsList');
+  const f = getFiltered();
+  if (!f.length) { list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📡</div>No installations found.</div>`; return; }
+  list.innerHTML = f.map(i => `
     <div class="install-card status-${i.status} ${selectedId===i.id?'selected':''}" onclick="selectInstallation(${i.id})">
       <div class="card-top"><div class="card-name">${i.name}</div><span class="status-badge status-${i.status}">${i.status}</span></div>
       <div class="card-addr">📍 ${i.address}</div>
       <div class="card-meta"><span>👥 ${i.team||'—'}</span>${i.maintDate?`<span>🔧 ${i.maintDate}</span>`:''}</div>
     </div>`).join('');
 }
+
 function renderMarkers() {
-  Object.values(markers).forEach(m=>map.removeLayer(m)); markers={};
-  installations.forEach(inst=>{
-    if(!inst.lat||!inst.lng)return;
-    const m=L.marker([inst.lat,inst.lng],{icon:createMarkerIcon(inst.status)}).addTo(map);
+  Object.values(markers).forEach(m => map.removeLayer(m)); markers = {};
+  installations.forEach(inst => {
+    if (!inst.lat || !inst.lng) return;
+    const m = L.marker([inst.lat, inst.lng], { icon: createMarkerIcon(inst.status) }).addTo(map);
     m.bindPopup(`<div class="popup-name">${inst.name}</div><div class="popup-addr">${inst.address}</div><div class="status-badge status-${inst.status}">${inst.status.toUpperCase()}</div><button class="popup-open" onclick="selectInstallation(${inst.id})">View Details</button>`);
-    m.on('click',()=>selectInstallation(inst.id));
-    markers[inst.id]=m;
+    m.on('click', () => selectInstallation(inst.id));
+    markers[inst.id] = m;
   });
 }
-function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCards();}
-function filterCards(){renderCards();}
 
-function selectInstallation(id){
-  selectedId=id;const inst=installations.find(i=>i.id===id);if(!inst)return;
+function setFilter(f, btn) { currentFilter=f; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderCards(); }
+function filterCards() { renderCards(); }
+
+function selectInstallation(id) {
+  selectedId = id;
+  const inst = installations.find(i => i.id === id);
+  if (!inst) return;
   renderCards();
-  if(inst.lat&&inst.lng){map.flyTo([inst.lat,inst.lng],14,{duration:0.8});markers[id]?.openPopup();}
-  document.getElementById('detailName').textContent=inst.name;
-  document.getElementById('detailBody').innerHTML=`
+  if (inst.lat && inst.lng) { map.flyTo([inst.lat, inst.lng], 14, { duration:0.8 }); markers[id]?.openPopup(); }
+  document.getElementById('detailName').textContent = inst.name;
+  document.getElementById('detailBody').innerHTML = `
     <div class="detail-section"><div class="detail-section-label">Status</div><span class="status-badge status-${inst.status}" style="font-size:0.75rem;padding:4px 12px">${inst.status.toUpperCase()}</span></div>
     <div class="detail-section"><div class="detail-section-label">Location</div>
       <div class="detail-field"><div class="detail-field-label">Address</div><div class="detail-field-value">${inst.address}</div></div>
@@ -1227,47 +621,71 @@ function selectInstallation(id){
       <div class="detail-field"><div class="detail-field-label">Next Maintenance</div><div class="detail-field-value">${inst.maintDate||'—'}</div></div>
     </div>
     ${inst.notes?`<div class="detail-section"><div class="detail-section-label">Notes / Documents</div><div class="detail-field"><div class="detail-field-value" style="white-space:pre-wrap">${inst.notes}</div></div></div>`:''}`;
-  document.getElementById('detailEditBtn').onclick=()=>openModal(id);
-  document.getElementById('detailDeleteBtn').onclick=()=>deleteInstallation(id);
+  document.getElementById('detailEditBtn').onclick = () => openModal(id);
+  document.getElementById('detailDeleteBtn').onclick = () => deleteInstallation(id);
   document.getElementById('detailPanel').classList.add('open');
 }
-function closeDetail(){selectedId=null;document.getElementById('detailPanel').classList.remove('open');renderCards();}
 
-function openModal(id=null){
-  editingId=id;const inst=id?installations.find(i=>i.id===id):null;
-  document.getElementById('modalTitle').textContent=id?'Edit Installation':'New Installation';
-  document.getElementById('f-name').value=inst?.name||'';document.getElementById('f-type').value=inst?.type||'';
-  document.getElementById('f-address').value=inst?.address||'';document.getElementById('f-status').value=inst?.status||'active';
-  document.getElementById('f-team').value=inst?.team||'';document.getElementById('f-contact').value=inst?.contact||'';
-  document.getElementById('f-install-date').value=inst?.installDate||'';document.getElementById('f-maint-date').value=inst?.maintDate||'';
-  document.getElementById('f-lat').value=inst?.lat||'';document.getElementById('f-lng').value=inst?.lng||'';
-  document.getElementById('f-notes').value=inst?.notes||'';
+function closeDetail() { selectedId=null; document.getElementById('detailPanel').classList.remove('open'); renderCards(); }
+
+function openModal(id=null) {
+  editingId = id;
+  const inst = id ? installations.find(i => i.id===id) : null;
+  document.getElementById('modalTitle').textContent = id ? 'Edit Installation' : 'New Installation';
+  document.getElementById('f-name').value = inst?.name||'';
+  document.getElementById('f-type').value = inst?.type||'';
+  document.getElementById('f-address').value = inst?.address||'';
+  document.getElementById('f-status').value = inst?.status||'active';
+  document.getElementById('f-team').value = inst?.team||'';
+  document.getElementById('f-contact').value = inst?.contact||'';
+  document.getElementById('f-install-date').value = inst?.installDate||'';
+  document.getElementById('f-maint-date').value = inst?.maintDate||'';
+  document.getElementById('f-lat').value = inst?.lat||'';
+  document.getElementById('f-lng').value = inst?.lng||'';
+  document.getElementById('f-notes').value = inst?.notes||'';
   document.getElementById('modalOverlay').classList.add('open');
 }
-function closeModal(){document.getElementById('modalOverlay').classList.remove('open');editingId=null;}
-function saveInstallation(){
-  const name=document.getElementById('f-name').value.trim();
-  const address=document.getElementById('f-address').value.trim();
-  const lat=parseFloat(document.getElementById('f-lat').value);
-  const lng=parseFloat(document.getElementById('f-lng').value);
-  if(!name||!address||isNaN(lat)||isNaN(lng)){alert('Please fill in Name, Address, Latitude, and Longitude.');return;}
-  const data={name,type:document.getElementById('f-type').value.trim(),address,status:document.getElementById('f-status').value,
-    team:document.getElementById('f-team').value.trim(),contact:document.getElementById('f-contact').value.trim(),
-    installDate:document.getElementById('f-install-date').value,maintDate:document.getElementById('f-maint-date').value,
-    lat,lng,notes:document.getElementById('f-notes').value.trim()};
-  const all=loadData();
-  if(editingId){
-    const idx=all.findIndex(i=>i.id===editingId);all[idx]={...all[idx],...data};saveData(all);renderAll();selectInstallation(editingId);
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId=null; }
+
+function saveInstallation() {
+  const name = document.getElementById('f-name').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  const lat = parseFloat(document.getElementById('f-lat').value);
+  const lng = parseFloat(document.getElementById('f-lng').value);
+  if (!name || !address || isNaN(lat) || isNaN(lng)) { alert('Please fill in Name, Address, Latitude, and Longitude.'); return; }
+  const data = {
+    name, type: document.getElementById('f-type').value.trim(), address,
+    status: document.getElementById('f-status').value,
+    team: document.getElementById('f-team').value.trim(),
+    contact: document.getElementById('f-contact').value.trim(),
+    installDate: document.getElementById('f-install-date').value,
+    maintDate: document.getElementById('f-maint-date').value,
+    lat, lng, notes: document.getElementById('f-notes').value.trim()
+  };
+  const all = loadData();
+  if (editingId) {
+    const idx = all.findIndex(i => i.id===editingId);
+    all[idx] = { ...all[idx], ...data };
+    saveData(all); renderAll(); selectInstallation(editingId);
   } else {
-    const newId=Date.now();all.push({id:newId,...data});saveData(all);renderAll();selectInstallation(newId);
+    const newId = Date.now();
+    all.push({ id: newId, ...data });
+    saveData(all); renderAll(); selectInstallation(newId);
   }
   closeModal();
 }
-function deleteInstallation(id){
-  if(!confirm('Delete this installation? This cannot be undone.'))return;
-  const all=loadData().filter(i=>i.id!==id);saveData(all);closeDetail();renderAll();
+
+function deleteInstallation(id) {
+  if (!confirm('Delete this installation? This cannot be undone.')) return;
+  const all = loadData().filter(i => i.id !== id);
+  saveData(all); closeDetail(); renderAll();
 }
-document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target===this) closeModal(); });
+
+// ── INIT ──────────────────────────────────────────────────────
+renderAll();
 </script>
 </body>
 </html>
