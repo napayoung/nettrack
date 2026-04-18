@@ -38,6 +38,9 @@
     0%,100% { opacity:1; transform:scale(1); }
     50% { opacity:0.5; transform:scale(1.4); }
   }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
   /* HEADER */
   header {
@@ -291,6 +294,72 @@
   .btn-cancel:hover { color: var(--text); }
   .btn-save { background: var(--accent); border: none; color: var(--bg); padding: 9px 22px; border-radius: 6px; font-family: var(--font-head); font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
   .btn-save:hover { background: #33eaff; }
+  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Address geocode row */
+  .address-row { position: relative; }
+  .geocode-btn {
+    position: absolute;
+    right: 6px; top: 50%; transform: translateY(-50%);
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 4px;
+    padding: 4px 10px;
+    font-family: var(--font-head); font-weight: 700; font-size: 0.65rem;
+    cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .geocode-btn:hover { background: #33eaff; }
+  .geocode-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .geocode-btn .spinner {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: var(--bg);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+  }
+  #f-address { padding-right: 90px; }
+
+  .geocode-status {
+    font-size: 0.65rem;
+    margin-top: 5px;
+    min-height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .geocode-status.success { color: var(--green); }
+  .geocode-status.error { color: var(--red); }
+  .geocode-status.info { color: var(--text-dim); }
+
+  /* Address autocomplete suggestions */
+  .suggestions-list {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0; right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    z-index: 3000;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    display: none;
+  }
+  .suggestions-list.open { display: block; }
+  .suggestion-item {
+    padding: 9px 12px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: all 0.1s;
+    line-height: 1.4;
+  }
+  .suggestion-item:last-child { border-bottom: none; }
+  .suggestion-item:hover { background: var(--surface2); color: var(--text); }
+  .suggestion-item strong { color: var(--accent); font-weight: 600; }
 
   /* Leaflet */
   .leaflet-container { background: #0d1520 !important; }
@@ -399,8 +468,19 @@
         <div class="form-group"><label class="form-label">Installation Name *</label><input class="form-input" id="f-name" placeholder="e.g. Router Node 4B"></div>
         <div class="form-group"><label class="form-label">Hardware Type</label><input class="form-input" id="f-type" placeholder="e.g. Cisco Router"></div>
       </div>
+
+      <!-- Address with live search -->
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Address / Location *</label>
+        <div class="address-row" id="addressWrap">
+          <input class="form-input" id="f-address" placeholder="Start typing an address..." autocomplete="off" oninput="onAddressInput()" onblur="hideSuggestionsDelayed()">
+          <button class="geocode-btn" id="geocodeBtn" onclick="geocodeAddress()" type="button">📍 Locate</button>
+          <div class="suggestions-list" id="suggestionsList"></div>
+        </div>
+        <div class="geocode-status info" id="geocodeStatus">Type an address and click Locate, or select a suggestion.</div>
+      </div>
+
       <div class="form-row">
-        <div class="form-group" style="flex:2"><label class="form-label">Address / Location *</label><input class="form-input" id="f-address" placeholder="123 Main St, City, State"></div>
         <div class="form-group"><label class="form-label">Status *</label>
           <select class="form-select" id="f-status">
             <option value="active">Active</option>
@@ -409,18 +489,15 @@
             <option value="maintenance">Maintenance</option>
           </select>
         </div>
-      </div>
-      <div class="form-row">
         <div class="form-group"><label class="form-label">Assigned Team</label><input class="form-input" id="f-team" placeholder="e.g. Network Ops Team A"></div>
+      </div>
+      <div class="form-row">
         <div class="form-group"><label class="form-label">Contact Person</label><input class="form-input" id="f-contact" placeholder="e.g. Jane Smith"></div>
-      </div>
-      <div class="form-row">
         <div class="form-group"><label class="form-label">Install Date</label><input class="form-input" id="f-install-date" type="date"></div>
-        <div class="form-group"><label class="form-label">Next Maintenance</label><input class="form-input" id="f-maint-date" type="date"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Latitude *</label><input class="form-input" id="f-lat" placeholder="e.g. 40.7128" type="number" step="any"></div>
-        <div class="form-group"><label class="form-label">Longitude *</label><input class="form-input" id="f-lng" placeholder="e.g. -74.0060" type="number" step="any"></div>
+        <div class="form-group"><label class="form-label">Next Maintenance</label><input class="form-input" id="f-maint-date" type="date"></div>
+        <div class="form-group"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Notes / Documents</label><textarea class="form-textarea" id="f-notes" placeholder="Add any notes, document links, or additional details..."></textarea></div>
@@ -428,7 +505,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveInstallation()">Save Installation</button>
+      <button class="btn-save" id="saveBtn" onclick="saveInstallation()">Save Installation</button>
     </div>
   </div>
 </div>
@@ -468,8 +545,114 @@ let nationalMapInited = false;
 let nationalMapObj = null;
 let currentTab = 'detail';
 
+// Geocode state
+let geocodedLat = null;
+let geocodedLng = null;
+let geocodedAddress = null;
+let suggestionTimeout = null;
+let hideSuggestionsTimeout = null;
+
+// ── GEOCODING (Nominatim — free, no API key) ──────────────────
+async function geocodeAddress() {
+  const address = document.getElementById('f-address').value.trim();
+  if (!address) { setGeocodeStatus('error', '⚠ Please enter an address first.'); return; }
+
+  const btn = document.getElementById('geocodeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Locating...';
+  setGeocodeStatus('info', 'Looking up address...');
+  geocodedLat = null; geocodedLng = null; geocodedAddress = null;
+  updateSaveBtn();
+
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const data = await res.json();
+    if (!data.length) {
+      setGeocodeStatus('error', '⚠ Address not found. Try being more specific.');
+    } else {
+      geocodedLat = parseFloat(data[0].lat);
+      geocodedLng = parseFloat(data[0].lon);
+      geocodedAddress = data[0].display_name;
+      setGeocodeStatus('success', `✓ Located: ${data[0].display_name.split(',').slice(0,3).join(',')}`);
+    }
+  } catch (e) {
+    setGeocodeStatus('error', '⚠ Could not connect to geocoding service. Check your connection.');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '📍 Locate';
+  updateSaveBtn();
+}
+
+async function fetchSuggestions(query) {
+  if (query.length < 3) { hideSuggestions(); return; }
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const data = await res.json();
+    showSuggestions(data, query);
+  } catch(e) { hideSuggestions(); }
+}
+
+function showSuggestions(results, query) {
+  const list = document.getElementById('suggestionsList');
+  if (!results.length) { hideSuggestions(); return; }
+  const words = query.toLowerCase().split(' ').filter(Boolean);
+  list.innerHTML = results.map(r => {
+    let label = r.display_name;
+    // bold matching words
+    words.forEach(w => {
+      const re = new RegExp(`(${w})`, 'gi');
+      label = label.replace(re, '<strong>$1</strong>');
+    });
+    return `<div class="suggestion-item" onmousedown="selectSuggestion('${r.display_name.replace(/'/g,"\\'")}', ${r.lat}, ${r.lon})">${label}</div>`;
+  }).join('');
+  list.classList.add('open');
+}
+
+function selectSuggestion(displayName, lat, lon) {
+  document.getElementById('f-address').value = displayName;
+  geocodedLat = parseFloat(lat);
+  geocodedLng = parseFloat(lon);
+  geocodedAddress = displayName;
+  setGeocodeStatus('success', `✓ Located: ${displayName.split(',').slice(0,3).join(',')}`);
+  hideSuggestions();
+  updateSaveBtn();
+}
+
+function hideSuggestions() {
+  document.getElementById('suggestionsList').classList.remove('open');
+}
+function hideSuggestionsDelayed() {
+  hideSuggestionsTimeout = setTimeout(hideSuggestions, 200);
+}
+
+function onAddressInput() {
+  clearTimeout(suggestionTimeout);
+  geocodedLat = null; geocodedLng = null;
+  setGeocodeStatus('info', 'Type an address and click Locate, or select a suggestion.');
+  updateSaveBtn();
+  const val = document.getElementById('f-address').value.trim();
+  if (val.length >= 3) {
+    suggestionTimeout = setTimeout(() => fetchSuggestions(val), 350);
+  } else {
+    hideSuggestions();
+  }
+}
+
+function setGeocodeStatus(type, msg) {
+  const el = document.getElementById('geocodeStatus');
+  el.className = `geocode-status ${type}`;
+  el.textContent = msg;
+}
+
+function updateSaveBtn() {
+  document.getElementById('saveBtn').disabled = !(geocodedLat && geocodedLng);
+}
+
 // ── MAPS ──────────────────────────────────────────────────────
-const map = L.map('map', { zoomControl: false }).setView([40.73, -73.95], 11);
+const map = L.map('map', { zoomControl: false }).setView([39.5, -98.35], 4);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
 
@@ -584,13 +767,18 @@ function renderCards() {
 
 function renderMarkers() {
   Object.values(markers).forEach(m => map.removeLayer(m)); markers = {};
-  installations.forEach(inst => {
-    if (!inst.lat || !inst.lng) return;
+  const valid = installations.filter(i => i.lat && i.lng);
+  valid.forEach(inst => {
     const m = L.marker([inst.lat, inst.lng], { icon: createMarkerIcon(inst.status) }).addTo(map);
     m.bindPopup(`<div class="popup-name">${inst.name}</div><div class="popup-addr">${inst.address}</div><div class="status-badge status-${inst.status}">${inst.status.toUpperCase()}</div><button class="popup-open" onclick="selectInstallation(${inst.id})">View Details</button>`);
     m.on('click', () => selectInstallation(inst.id));
     markers[inst.id] = m;
   });
+  // Fit map to all markers if any
+  if (valid.length > 0 && Object.keys(markers).length > 0) {
+    const group = L.featureGroup(Object.values(markers));
+    map.fitBounds(group.getBounds().pad(0.2));
+  }
 }
 
 function setFilter(f, btn) { currentFilter=f; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderCards(); }
@@ -607,7 +795,6 @@ function selectInstallation(id) {
     <div class="detail-section"><div class="detail-section-label">Status</div><span class="status-badge status-${inst.status}" style="font-size:0.75rem;padding:4px 12px">${inst.status.toUpperCase()}</span></div>
     <div class="detail-section"><div class="detail-section-label">Location</div>
       <div class="detail-field"><div class="detail-field-label">Address</div><div class="detail-field-value">${inst.address}</div></div>
-      <div class="detail-field"><div class="detail-field-label">Coordinates</div><div class="detail-field-value">${inst.lat}, ${inst.lng}</div></div>
     </div>
     <div class="detail-section"><div class="detail-section-label">Hardware</div>
       <div class="detail-field"><div class="detail-field-label">Type</div><div class="detail-field-value">${inst.type||'—'}</div></div>
@@ -628,6 +815,7 @@ function selectInstallation(id) {
 
 function closeDetail() { selectedId=null; document.getElementById('detailPanel').classList.remove('open'); renderCards(); }
 
+// ── MODAL ──────────────────────────────────────────────────────
 function openModal(id=null) {
   editingId = id;
   const inst = id ? installations.find(i => i.id===id) : null;
@@ -640,29 +828,50 @@ function openModal(id=null) {
   document.getElementById('f-contact').value = inst?.contact||'';
   document.getElementById('f-install-date').value = inst?.installDate||'';
   document.getElementById('f-maint-date').value = inst?.maintDate||'';
-  document.getElementById('f-lat').value = inst?.lat||'';
-  document.getElementById('f-lng').value = inst?.lng||'';
   document.getElementById('f-notes').value = inst?.notes||'';
+
+  // Pre-fill geocode state if editing existing record
+  if (inst?.lat && inst?.lng) {
+    geocodedLat = inst.lat;
+    geocodedLng = inst.lng;
+    geocodedAddress = inst.address;
+    setGeocodeStatus('success', `✓ Location loaded from saved data.`);
+  } else {
+    geocodedLat = null; geocodedLng = null; geocodedAddress = null;
+    setGeocodeStatus('info', 'Type an address and click Locate, or select a suggestion.');
+  }
+  updateSaveBtn();
+  hideSuggestions();
   document.getElementById('modalOverlay').classList.add('open');
 }
 
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId=null; }
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+  geocodedLat = null; geocodedLng = null; geocodedAddress = null;
+  hideSuggestions();
+}
 
 function saveInstallation() {
   const name = document.getElementById('f-name').value.trim();
   const address = document.getElementById('f-address').value.trim();
-  const lat = parseFloat(document.getElementById('f-lat').value);
-  const lng = parseFloat(document.getElementById('f-lng').value);
-  if (!name || !address || isNaN(lat) || isNaN(lng)) { alert('Please fill in Name, Address, Latitude, and Longitude.'); return; }
+  if (!name || !address) { alert('Please fill in the Installation Name and Address.'); return; }
+  if (!geocodedLat || !geocodedLng) { alert('Please click "Locate" or select an address suggestion to place it on the map.'); return; }
+
   const data = {
-    name, type: document.getElementById('f-type').value.trim(), address,
+    name,
+    type: document.getElementById('f-type').value.trim(),
+    address,
     status: document.getElementById('f-status').value,
     team: document.getElementById('f-team').value.trim(),
     contact: document.getElementById('f-contact').value.trim(),
     installDate: document.getElementById('f-install-date').value,
     maintDate: document.getElementById('f-maint-date').value,
-    lat, lng, notes: document.getElementById('f-notes').value.trim()
+    lat: geocodedLat,
+    lng: geocodedLng,
+    notes: document.getElementById('f-notes').value.trim()
   };
+
   const all = loadData();
   if (editingId) {
     const idx = all.findIndex(i => i.id===editingId);
