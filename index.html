@@ -569,9 +569,6 @@ header{
         <div class="form-group"><label class="form-label">Port Date</label><input class="form-input" id="f-port-date" type="date"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Installer Name</label><input class="form-input" id="f-installer-name" placeholder="e.g. Mike Torres" autocomplete="off"></div>
-      </div>
-      <div class="form-row">
         <div class="form-group"><label class="form-label">Overhead Page</label>
           <select class="form-select" id="f-overhead-page">
             <option value="">— Select —</option>
@@ -993,7 +990,6 @@ function openDetail(id){
     '<div class="detail-field"><div class="detail-field-label">Installer Name</div><div class="detail-field-value">'+(inst.installerName||'—')+'</div></div>'+
     '<div class="detail-field"><div class="detail-field-label">Install Date</div><div class="detail-field-value">'+(inst.installDate||'—')+'</div></div>'+
     '<div class="detail-field"><div class="detail-field-label">Port Date</div><div class="detail-field-value">'+(inst.portDate||'—')+'</div></div>'+
-    '<div class="detail-field"><div class="detail-field-label">Installer Name</div><div class="detail-field-value">'+(inst.installerName||'—')+'</div></div>'+
     '<div class="detail-field"><div class="detail-field-label">Overhead Page</div><div class="detail-field-value">'+(inst.overheadPage?inst.overheadPage.toUpperCase():'—')+'</div></div>'+
     '<div class="detail-field"><div class="detail-field-label">Page All</div><div class="detail-field-value">'+(inst.pageAll?inst.pageAll.toUpperCase():'—')+'</div></div>'+
     '</div>'+
