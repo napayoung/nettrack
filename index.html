@@ -3,343 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetTrack — Installation Portal</title>
+<title>NetTrack</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root {
-    --bg: #0a0e1a;
-    --surface: #111827;
-    --surface2: #1a2235;
-    --border: #1f2d45;
-    --accent: #00e5ff;
-    --accent2: #7c3aed;
-    --green: #00f5a0;
-    --yellow: #fbbf24;
-    --red: #f43f5e;
-    --gray: #64748b;
-    --text: #e2e8f0;
-    --text-dim: #94a3b8;
-    --font-head: 'Syne', sans-serif;
-    --font-mono: 'Space Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-mono);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+:root{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--border:#1f2d45;--accent:#00e5ff;--accent2:#7c3aed;--green:#00f5a0;--yellow:#fbbf24;--red:#f43f5e;--gray:#64748b;--text:#e2e8f0;--text-dim:#94a3b8;--font-head:'Syne',sans-serif;--font-mono:'Space Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.4);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.4);} }
-  @keyframes spin { to{transform:rotate(360deg);} }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+/* AUTH */
+#authScreen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;align-items:center;justify-content:center;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(124,58,237,0.05) 0%,transparent 50%);}
+#authScreen.hidden{display:none;}
+.auth-card{width:440px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px;position:relative;overflow:hidden;animation:fadeUp 0.3s ease;}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.auth-logo{font-family:var(--font-head);font-weight:800;font-size:1.6rem;color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.auth-logo span{color:var(--text);}
+.auth-logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;}
+.auth-subtitle{font-size:0.72rem;color:var(--text-dim);margin-bottom:24px;}
+.cred-warning{background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);border-radius:8px;padding:12px 14px;font-size:0.68rem;color:#fbbf24;margin-bottom:20px;line-height:1.8;display:none;}
+.cred-warning code{background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;font-size:0.65rem;}
+.auth-panel{display:none;}
+.auth-panel.active{display:block;animation:fadeUp 0.2s ease;}
+.auth-heading{font-family:var(--font-head);font-weight:800;font-size:1.15rem;margin-bottom:4px;}
+.auth-desc{font-size:0.68rem;color:var(--text-dim);margin-bottom:22px;line-height:1.6;}
+.auth-field{margin-bottom:14px;}
+.auth-label{display:block;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);margin-bottom:6px;}
+.auth-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:11px 14px;color:var(--text);font-family:var(--font-mono);font-size:0.8rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.auth-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.08);}
+.auth-input::placeholder{color:var(--gray);}
+.auth-error{font-size:0.68rem;color:var(--red);margin-top:8px;padding:8px 12px;background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);border-radius:6px;display:none;line-height:1.6;}
+.auth-error.visible{display:block;}
+.auth-success{font-size:0.68rem;color:var(--green);margin-top:8px;padding:8px 12px;background:rgba(0,245,160,0.08);border:1px solid rgba(0,245,160,0.2);border-radius:6px;display:none;line-height:1.6;}
+.auth-success.visible{display:block;}
+.auth-btn{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:7px;padding:12px;font-family:var(--font-head);font-weight:700;font-size:0.9rem;cursor:pointer;margin-top:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.auth-btn:hover:not(:disabled){background:#33eaff;transform:translateY(-1px);}
+.auth-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.2);border-top-color:var(--bg);border-radius:50%;animation:spin 0.6s linear infinite;}
+.auth-link{text-align:center;margin-top:16px;font-size:0.7rem;color:var(--text-dim);}
+.auth-link a{color:var(--accent);text-decoration:none;cursor:pointer;font-weight:700;}
+.auth-link a:hover{text-decoration:underline;}
+hr.auth-divider{border:none;border-top:1px solid var(--border);margin:18px 0;}
 
-  /* ── AUTH SCREEN ── */
-  #authScreen {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    z-index: 9000;
-    display: flex; align-items: center; justify-content: center;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(0,229,255,0.04) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.05) 0%, transparent 50%);
-  }
-  #authScreen.hidden { display: none; }
-
-  .auth-card {
-    width: 420px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px;
-    position: relative;
-    overflow: hidden;
-    animation: fadeIn 0.3s ease;
-  }
-  .auth-card::before {
-    content: ''; position: absolute;
-    top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-  .auth-logo {
-    font-family: var(--font-head); font-weight: 800; font-size: 1.6rem;
-    color: var(--accent); display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
-  }
-  .auth-logo span { color: var(--text); }
-  .auth-logo-dot { width:10px;height:10px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite; }
-  .auth-subtitle { font-size: 0.72rem; color: var(--text-dim); margin-bottom: 32px; }
-
-  .auth-panel { display: none; }
-  .auth-panel.active { display: block; animation: fadeIn 0.2s ease; }
-
-  .auth-heading { font-family: var(--font-head); font-weight: 800; font-size: 1.15rem; margin-bottom: 4px; }
-  .auth-desc { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 24px; line-height: 1.6; }
-
-  .auth-field { margin-bottom: 14px; }
-  .auth-label { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); margin-bottom: 6px; }
-  .auth-input {
-    width: 100%; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 7px; padding: 11px 14px; color: var(--text);
-    font-family: var(--font-mono); font-size: 0.8rem; outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .auth-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,255,0.08); }
-  .auth-input.error { border-color: var(--red); }
-  .auth-input::placeholder { color: var(--gray); }
-
-  .auth-error { font-size: 0.68rem; color: var(--red); margin-top: 8px; min-height: 18px; display: none; }
-  .auth-error.visible { display: block; }
-
-  .auth-success {
-    background: rgba(0,245,160,0.08); border: 1px solid rgba(0,245,160,0.2);
-    border-radius: 7px; padding: 10px 14px; font-size: 0.7rem; color: var(--green);
-    margin-bottom: 14px; display: none;
-  }
-  .auth-success.visible { display: block; }
-
-  .auth-btn {
-    width: 100%; background: var(--accent); color: var(--bg);
-    border: none; border-radius: 7px; padding: 12px;
-    font-family: var(--font-head); font-weight: 700; font-size: 0.9rem;
-    cursor: pointer; margin-top: 6px; transition: all 0.2s; letter-spacing: 0.3px;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .auth-btn:hover:not(:disabled) { background: #33eaff; transform: translateY(-1px); }
-  .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-  .auth-btn .spinner { width:16px;height:16px;border:2px solid rgba(0,0,0,0.2);border-top-color:var(--bg);border-radius:50%;animation:spin 0.6s linear infinite; }
-
-  .auth-link { text-align: center; margin-top: 18px; font-size: 0.7rem; color: var(--text-dim); }
-  .auth-link a { color: var(--accent); text-decoration: none; cursor: pointer; font-weight: 700; }
-  .auth-link a:hover { text-decoration: underline; }
-  .auth-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-
-  /* ── APP SHELL ── */
-  #appShell { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-  #appShell.visible { display: flex; }
-
-  /* HEADER */
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 24px; height: 60px;
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    flex-shrink: 0; z-index: 1000;
-  }
-  .logo { font-family: var(--font-head); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
-  .logo span { color: var(--text); }
-  .logo-dot { width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite; }
-
-  .header-center {
-    display: flex; align-items: center; gap: 4px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 4px;
-  }
-  .tab-btn { background: transparent; border: none; color: var(--text-dim); font-family: var(--font-head); font-weight: 600; font-size: 0.8rem; padding: 6px 16px; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
-  .tab-btn.active { background: var(--accent); color: var(--bg); }
-  .tab-btn:not(.active):hover { color: var(--text); background: var(--border); }
-
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .header-stats { display: flex; gap: 10px; font-size: 0.7rem; color: var(--text-dim); }
-  .stat-pill { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; }
-  .stat-dot { width:6px;height:6px;border-radius:50%; }
-  .stat-num { color: var(--text); font-weight: 700; }
-
-  .btn-add { background: var(--accent); color: var(--bg); border: none; padding: 8px 18px; border-radius: 6px; font-family: var(--font-head); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-  .btn-add:hover { background: #33eaff; transform: translateY(-1px); }
-
-  /* User menu */
-  .user-menu-wrap { position: relative; }
-  .user-btn { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: all 0.15s; color: var(--text); font-family: var(--font-mono); font-size: 0.72rem; }
-  .user-btn:hover { border-color: var(--accent); }
-  .user-avatar { width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;font-size:0.7rem;color:var(--bg);flex-shrink:0; }
-  .user-dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; min-width: 210px; padding: 6px; z-index: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.4); display: none; }
-  .user-dropdown.open { display: block; animation: fadeIn 0.15s ease; }
-  .dropdown-user-info { padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
-  .dropdown-name { font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; }
-  .dropdown-email { font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .dropdown-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 5px; cursor: pointer; font-size: 0.72rem; color: var(--text-dim); transition: all 0.15s; border: none; background: none; width: 100%; text-align: left; font-family: var(--font-mono); }
-  .dropdown-item:hover { background: var(--surface2); color: var(--text); }
-  .dropdown-item.danger { color: var(--red); }
-  .dropdown-item.danger:hover { background: rgba(244,63,94,0.1); }
-
-  /* VIEWS */
-  .view { display: none; flex: 1; overflow: hidden; }
-  .view.active { display: flex; }
-
-  /* SIDEBAR */
-  .sidebar { width: 340px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-  .sidebar-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-  .search-box { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; color: var(--text); font-family: var(--font-mono); font-size: 0.75rem; width: 100%; outline: none; transition: border-color 0.2s; }
-  .search-box:focus { border-color: var(--accent); }
-  .search-box::placeholder { color: var(--gray); }
-  .filter-row { display: flex; gap: 6px; }
-  .filter-btn { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.65rem; padding: 5px 8px; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
-  .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.08); }
-  .installations-list { flex: 1; overflow-y: auto; padding: 8px; }
-  .installations-list::-webkit-scrollbar { width: 4px; }
-  .installations-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .install-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden; }
-  .install-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 8px 0 0 8px; }
-  .install-card.status-active::before { background: var(--green); }
-  .install-card.status-pending::before { background: var(--yellow); }
-  .install-card.status-offline::before { background: var(--red); }
-  .install-card.status-maintenance::before { background: var(--accent2); }
-  .install-card:hover { border-color: var(--accent); transform: translateX(2px); }
-  .install-card.selected { border-color: var(--accent); background: rgba(0,229,255,0.06); }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-  .card-name { font-family: var(--font-head); font-weight: 600; font-size: 0.85rem; color: var(--text); line-height: 1.2; }
-
-  .status-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; flex-shrink: 0; }
-  .status-active { background: rgba(0,245,160,0.15); color: var(--green); }
-  .status-pending { background: rgba(251,191,36,0.15); color: var(--yellow); }
-  .status-offline { background: rgba(244,63,94,0.15); color: var(--red); }
-  .status-maintenance { background: rgba(124,58,237,0.15); color: #a78bfa; }
-
-  .card-addr { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card-meta { display: flex; gap: 10px; font-size: 0.62rem; color: var(--gray); }
-
-  #map { flex: 1; background: var(--bg); }
-
-  /* DETAIL PANEL */
-  .detail-panel { width: 320px; flex-shrink: 0; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
-  .detail-panel.open { transform: translateX(0); }
-  .detail-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .detail-title { font-family: var(--font-head); font-weight: 800; font-size: 1rem; }
-  .btn-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .btn-close:hover { color: var(--text); border-color: var(--text-dim); }
-  .detail-body { flex: 1; overflow-y: auto; padding: 16px; }
-  .detail-body::-webkit-scrollbar { width: 4px; }
-  .detail-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-  .detail-section { margin-bottom: 20px; }
-  .detail-section-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 8px; }
-  .detail-field { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 6px; }
-  .detail-field-label { font-size: 0.62rem; color: var(--gray); margin-bottom: 3px; }
-  .detail-field-value { font-size: 0.78rem; color: var(--text); }
-  .detail-actions { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-  .btn-edit { flex: 1; background: var(--accent2); border: none; color: white; padding: 9px; border-radius: 6px; font-family: var(--font-head); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-  .btn-edit:hover { background: #6d28d9; }
-  .btn-delete { background: rgba(244,63,94,0.15); border: 1px solid rgba(244,63,94,0.3); color: var(--red); padding: 9px 14px; border-radius: 6px; font-family: var(--font-head); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-  .btn-delete:hover { background: rgba(244,63,94,0.25); }
-
-  /* NATIONAL VIEW */
-  #nationalView { flex-direction: row; }
-  #nationalMap { flex: 1; position: relative; min-width: 0; }
-  .map-legend { position: absolute; bottom: 30px; left: 12px; z-index: 1000; background: rgba(17,24,39,0.92); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.65rem; pointer-events: none; backdrop-filter: blur(4px); }
-  .map-legend-title { font-family: var(--font-head); font-weight: 700; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; color: var(--text-dim); }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-  .national-sidebar { width: 300px; flex-shrink: 0; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-  .national-sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
-  .national-sidebar-title { font-family: var(--font-head); font-weight: 800; font-size: 1rem; margin-bottom: 3px; }
-  .national-sidebar-sub { font-size: 0.65rem; color: var(--text-dim); }
-  .big-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border); }
-  .big-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; position: relative; overflow: hidden; }
-  .big-stat::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
-  .big-stat.s-active::after { background: var(--green); }
-  .big-stat.s-pending::after { background: var(--yellow); }
-  .big-stat.s-offline::after { background: var(--red); }
-  .big-stat.s-maintenance::after { background: #a78bfa; }
-  .big-stat.s-total::after { background: var(--accent); }
-  .big-stat-num { font-family: var(--font-head); font-weight: 800; font-size: 2rem; line-height: 1; margin-bottom: 4px; }
-  .s-active .big-stat-num { color: var(--green); }
-  .s-pending .big-stat-num { color: var(--yellow); }
-  .s-offline .big-stat-num { color: var(--red); }
-  .s-maintenance .big-stat-num { color: #a78bfa; }
-  .s-total .big-stat-num { color: var(--accent); }
-  .big-stat-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); }
-  .health-section { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-  .health-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray); margin-bottom: 8px; display: flex; justify-content: space-between; }
-  .health-bar { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; display: flex; gap: 1px; }
-  .health-segment { height: 100%; border-radius: 2px; }
-  .alerts-section { flex: 1; overflow-y: auto; padding: 12px; }
-  .alerts-section::-webkit-scrollbar { width: 4px; }
-  .alerts-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-  .alerts-title { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray); margin-bottom: 10px; }
-  .alert-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
-  .alert-item:hover { border-color: var(--accent); }
-  .alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
-  .alert-name { font-family: var(--font-head); font-weight: 600; font-size: 0.75rem; margin-bottom: 2px; }
-  .alert-meta { font-size: 0.62rem; color: var(--text-dim); }
-
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; width: 520px; max-height: 85vh; overflow-y: auto; transform: scale(0.95) translateY(10px); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
-  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
-  .modal::-webkit-scrollbar { width: 4px; }
-  .modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .modal-title { font-family: var(--font-head); font-weight: 800; font-size: 1.1rem; }
-  .modal-body { padding: 20px 24px; }
-  .form-row { display: flex; gap: 12px; margin-bottom: 14px; }
-  .form-group { flex: 1; }
-  .form-label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); margin-bottom: 6px; }
-  .form-input, .form-select, .form-textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 12px; color: var(--text); font-family: var(--font-mono); font-size: 0.75rem; outline: none; transition: border-color 0.2s; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
-  .form-select option { background: var(--surface); }
-  .form-textarea { min-height: 70px; resize: vertical; }
-  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
-  .btn-cancel { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); padding: 9px 18px; border-radius: 6px; font-family: var(--font-head); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
-  .btn-cancel:hover { color: var(--text); }
-  .btn-save { background: var(--accent); border: none; color: var(--bg); padding: 9px 22px; border-radius: 6px; font-family: var(--font-head); font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-  .btn-save:hover { background: #33eaff; }
-  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* Address geocode */
-  .address-row { position: relative; }
-  .geocode-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: var(--accent); color: var(--bg); border: none; border-radius: 4px; padding: 4px 10px; font-family: var(--font-head); font-weight: 700; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-  .geocode-btn:hover { background: #33eaff; }
-  .geocode-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .geocode-btn .spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid rgba(0,0,0,0.3); border-top-color: var(--bg); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; }
-  #f-address { padding-right: 90px; }
-  .geocode-status { font-size: 0.65rem; margin-top: 5px; min-height: 16px; display: flex; align-items: center; gap: 5px; }
-  .geocode-status.success { color: var(--green); }
-  .geocode-status.error { color: var(--red); }
-  .geocode-status.info { color: var(--text-dim); }
-  .suggestions-list { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; z-index: 3000; max-height: 200px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: none; }
-  .suggestions-list.open { display: block; }
-  .suggestion-item { padding: 9px 12px; font-size: 0.72rem; color: var(--text-dim); cursor: pointer; border-bottom: 1px solid var(--border); transition: all 0.1s; line-height: 1.4; }
-  .suggestion-item:last-child { border-bottom: none; }
-  .suggestion-item:hover { background: var(--surface2); color: var(--text); }
-  .suggestion-item strong { color: var(--accent); font-weight: 600; }
-
-  /* Leaflet */
-  .leaflet-container { background: #0d1520 !important; }
-  .custom-marker { width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer; }
-  .custom-marker .icon { transform:rotate(45deg);font-size:14px; }
-  .custom-marker.active-m { background:var(--green);box-shadow:0 0 12px rgba(0,245,160,0.5); }
-  .custom-marker.pending-m { background:var(--yellow);box-shadow:0 0 12px rgba(251,191,36,0.5); }
-  .custom-marker.offline-m { background:var(--red);box-shadow:0 0 12px rgba(244,63,94,0.5); }
-  .custom-marker.maintenance-m { background:#a78bfa;box-shadow:0 0 12px rgba(124,58,237,0.5); }
-  .national-marker { width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid rgba(255,255,255,0.4);cursor:pointer; }
-  .national-marker.active-m { background:var(--green);box-shadow:0 0 10px rgba(0,245,160,0.7); }
-  .national-marker.pending-m { background:var(--yellow);box-shadow:0 0 10px rgba(251,191,36,0.7); }
-  .national-marker.offline-m { background:var(--red);box-shadow:0 0 10px rgba(244,63,94,0.7); }
-  .national-marker.maintenance-m { background:#a78bfa;box-shadow:0 0 10px rgba(124,58,237,0.7); }
-  .leaflet-popup-content-wrapper { background:var(--surface) !important;border:1px solid var(--border) !important;border-radius:8px !important;color:var(--text) !important;font-family:var(--font-mono) !important;box-shadow:0 8px 32px rgba(0,0,0,0.5) !important; }
-  .leaflet-popup-tip { background:var(--surface) !important; }
-  .leaflet-popup-content { margin:12px 14px !important;font-size:0.75rem !important; }
-  .popup-name { font-family:var(--font-head);font-weight:700;font-size:0.9rem;margin-bottom:4px; }
-  .popup-addr { color:var(--text-dim);margin-bottom:8px;font-size:0.68rem; }
-  .popup-open { background:var(--accent);color:var(--bg);border:none;padding:5px 12px;border-radius:4px;font-family:var(--font-head);font-weight:600;font-size:0.72rem;cursor:pointer;width:100%;margin-top:4px; }
-  .empty-state { padding:40px 20px;text-align:center;color:var(--gray);font-size:0.75rem; }
-  .empty-state-icon { font-size:2.5rem;margin-bottom:10px;opacity:0.4; }
-  .leaflet-tile { filter:brightness(0.45) saturate(0.7) hue-rotate(185deg); }
+/* APP */
+#appShell{display:none;flex-direction:column;flex:1;overflow:hidden;}
+#appShell.visible{display:flex;}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;z-index:1000;}
+.logo{font-family:var(--font-head);font-weight:800;font-size:1.3rem;letter-spacing:-0.5px;color:var(--accent);display:flex;align-items:center;gap:8px;}
+.logo span{color:var(--text);}
+.logo-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;}
+.header-center{display:flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px;}
+.tab-btn{background:transparent;border:none;color:var(--text-dim);font-family:var(--font-head);font-weight:600;font-size:0.8rem;padding:6px 16px;border-radius:5px;cursor:pointer;transition:all 0.2s;}
+.tab-btn.active{background:var(--accent);color:var(--bg);}
+.tab-btn:not(.active):hover{color:var(--text);background:var(--border);}
+.header-right{display:flex;align-items:center;gap:12px;}
+.header-stats{display:flex;gap:10px;font-size:0.7rem;color:var(--text-dim);}
+.stat-pill{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:20px;}
+.stat-dot{width:6px;height:6px;border-radius:50%;}
+.stat-num{color:var(--text);font-weight:700;}
+.btn-add{background:var(--accent);color:var(--bg);border:none;padding:8px 18px;border-radius:6px;font-family:var(--font-head);font-weight:600;font-size:0.85rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn-add:hover{background:#33eaff;transform:translateY(-1px);}
+.user-menu-wrap{position:relative;}
+.user-btn{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;transition:all 0.15s;color:var(--text);font-family:var(--font-mono);font-size:0.72rem;}
+.user-btn:hover{border-color:var(--accent);}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;font-size:0.7rem;color:var(--bg);flex-shrink:0;}
+.user-dropdown{position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;min-width:210px;padding:6px;z-index:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);display:none;}
+.user-dropdown.open{display:block;}
+.dropdown-user-info{padding:8px 10px 10px;border-bottom:1px solid var(--border);margin-bottom:6px;}
+.dropdown-email{font-size:0.65rem;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dropdown-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:5px;cursor:pointer;font-size:0.72rem;color:var(--text-dim);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font-mono);}
+.dropdown-item:hover{background:var(--surface2);color:var(--text);}
+.dropdown-item.danger{color:var(--red);}
+.dropdown-item.danger:hover{background:rgba(244,63,94,0.1);}
+.view{display:none;flex:1;overflow:hidden;}
+.view.active{display:flex;}
+.sidebar{width:340px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
+.search-box{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.75rem;width:100%;outline:none;transition:border-color 0.2s;}
+.search-box:focus{border-color:var(--accent);}
+.search-box::placeholder{color:var(--gray);}
+.filter-row{display:flex;gap:6px;}
+.filter-btn{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:var(--font-mono);font-size:0.65rem;padding:5px 8px;border-radius:4px;cursor:pointer;transition:all 0.15s;}
+.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,0.08);}
+.installations-list{flex:1;overflow-y:auto;padding:8px;}
+.installations-list::-webkit-scrollbar{width:4px;}
+.installations-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.install-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:6px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;}
+.install-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:8px 0 0 8px;}
+.install-card.status-active::before{background:var(--green);}
+.install-card.status-pending::before{background:var(--yellow);}
+.install-card.status-offline::before{background:var(--red);}
+.install-card.status-maintenance::before{background:var(--accent2);}
+.install-card:hover{border-color:var(--accent);transform:translateX(2px);}
+.install-card.selected{border-color:var(--accent);background:rgba(0,229,255,0.06);}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.card-name{font-family:var(--font-head);font-weight:600;font-size:0.85rem;color:var(--text);line-height:1.2;}
+.status-badge{font-size:0.6rem;padding:2px 8px;border-radius:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;flex-shrink:0;}
+.status-active{background:rgba(0,245,160,0.15);color:var(--green);}
+.status-pending{background:rgba(251,191,36,0.15);color:var(--yellow);}
+.status-offline{background:rgba(244,63,94,0.15);color:var(--red);}
+.status-maintenance{background:rgba(124,58,237,0.15);color:#a78bfa;}
+.card-addr{font-size:0.68rem;color:var(--text-dim);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-meta{display:flex;gap:10px;font-size:0.62rem;color:var(--gray);}
+#map{flex:1;background:var(--bg);}
+.detail-panel{width:320px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}
+.detail-panel.open{transform:translateX(0);}
+.detail-header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.detail-title{font-family:var(--font-head);font-weight:800;font-size:1rem;}
+.btn-close{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.btn-close:hover{color:var(--text);border-color:var(--text-dim);}
+.detail-body{flex:1;overflow-y:auto;padding:16px;}
+.detail-body::-webkit-scrollbar{width:4px;}
+.detail-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.detail-section{margin-bottom:20px;}
+.detail-section-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:8px;}
+.detail-field{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;}
+.detail-field-label{font-size:0.62rem;color:var(--gray);margin-bottom:3px;}
+.detail-field-value{font-size:0.78rem;color:var(--text);}
+.detail-actions{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;}
+.btn-edit{flex:1;background:var(--accent2);border:none;color:white;padding:9px;border-radius:6px;font-family:var(--font-head);font-weight:600;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.btn-edit:hover{background:#6d28d9;}
+.btn-delete{background:rgba(244,63,94,0.15);border:1px solid rgba(244,63,94,0.3);color:var(--red);padding:9px 14px;border-radius:6px;font-family:var(--font-head);font-weight:600;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.btn-delete:hover{background:rgba(244,63,94,0.25);}
+#nationalView{flex-direction:row;}
+#nationalMap{flex:1;position:relative;min-width:0;}
+.map-legend{position:absolute;bottom:30px;left:12px;z-index:1000;background:rgba(17,24,39,0.92);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.65rem;pointer-events:none;backdrop-filter:blur(4px);}
+.map-legend-title{font-family:var(--font-head);font-weight:700;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.legend-item{display:flex;align-items:center;gap:6px;margin-bottom:4px;color:var(--text-dim);}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.national-sidebar{width:300px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.national-sidebar-header{padding:16px;border-bottom:1px solid var(--border);}
+.national-sidebar-title{font-family:var(--font-head);font-weight:800;font-size:1rem;margin-bottom:3px;}
+.national-sidebar-sub{font-size:0.65rem;color:var(--text-dim);}
+.big-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;border-bottom:1px solid var(--border);}
+.big-stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;position:relative;overflow:hidden;}
+.big-stat::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
+.big-stat.s-active::after{background:var(--green);}
+.big-stat.s-pending::after{background:var(--yellow);}
+.big-stat.s-offline::after{background:var(--red);}
+.big-stat.s-maintenance::after{background:#a78bfa;}
+.big-stat.s-total::after{background:var(--accent);}
+.big-stat-num{font-family:var(--font-head);font-weight:800;font-size:2rem;line-height:1;margin-bottom:4px;}
+.s-active .big-stat-num{color:var(--green);}
+.s-pending .big-stat-num{color:var(--yellow);}
+.s-offline .big-stat-num{color:var(--red);}
+.s-maintenance .big-stat-num{color:#a78bfa;}
+.s-total .big-stat-num{color:var(--accent);}
+.big-stat-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);}
+.health-section{padding:12px 16px;border-bottom:1px solid var(--border);}
+.health-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--gray);margin-bottom:8px;display:flex;justify-content:space-between;}
+.health-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;display:flex;gap:1px;}
+.health-segment{height:100%;border-radius:2px;}
+.alerts-section{flex:1;overflow-y:auto;padding:12px;}
+.alerts-section::-webkit-scrollbar{width:4px;}
+.alerts-section::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.alerts-title{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--gray);margin-bottom:10px;}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;transition:all 0.15s;}
+.alert-item:hover{border-color:var(--accent);}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.alert-name{font-family:var(--font-head);font-weight:600;font-size:0.75rem;margin-bottom:2px;}
+.alert-meta{font-size:0.62rem;color:var(--text-dim);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:520px;max-height:85vh;overflow-y:auto;transform:scale(0.95) translateY(10px);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);}
+.modal-overlay.open .modal{transform:scale(1) translateY(0);}
+.modal::-webkit-scrollbar{width:4px;}
+.modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:var(--font-head);font-weight:800;font-size:1.1rem;}
+.modal-body{padding:20px 24px;}
+.form-row{display:flex;gap:12px;margin-bottom:14px;}
+.form-group{flex:1;}
+.form-label{display:block;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);margin-bottom:6px;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.75rem;outline:none;transition:border-color 0.2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);}
+.form-select option{background:var(--surface);}
+.form-textarea{min-height:70px;resize:vertical;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.btn-cancel{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);padding:9px 18px;border-radius:6px;font-family:var(--font-head);font-weight:600;font-size:0.8rem;cursor:pointer;transition:all 0.15s;}
+.btn-cancel:hover{color:var(--text);}
+.btn-save{background:var(--accent);border:none;color:var(--bg);padding:9px 22px;border-radius:6px;font-family:var(--font-head);font-weight:700;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.btn-save:hover{background:#33eaff;}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed;}
+.address-row{position:relative;}
+.geocode-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--accent);color:var(--bg);border:none;border-radius:4px;padding:4px 10px;font-family:var(--font-head);font-weight:700;font-size:0.65rem;cursor:pointer;white-space:nowrap;}
+.geocode-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.geocode-btn .spin{display:inline-block;width:10px;height:10px;border:2px solid rgba(0,0,0,0.3);border-top-color:var(--bg);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;}
+#f-address{padding-right:90px;}
+.geocode-status{font-size:0.65rem;margin-top:5px;min-height:16px;}
+.geocode-status.success{color:var(--green);}
+.geocode-status.error{color:var(--red);}
+.geocode-status.info{color:var(--text-dim);}
+.suggestions-list{position:absolute;top:calc(100% + 2px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;z-index:3000;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4);display:none;}
+.suggestions-list.open{display:block;}
+.suggestion-item{padding:9px 12px;font-size:0.72rem;color:var(--text-dim);cursor:pointer;border-bottom:1px solid var(--border);line-height:1.4;}
+.suggestion-item:last-child{border-bottom:none;}
+.suggestion-item:hover{background:var(--surface2);color:var(--text);}
+.leaflet-container{background:#0d1520 !important;}
+.custom-marker{width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.custom-marker .icon{transform:rotate(45deg);font-size:14px;}
+.custom-marker.active-m{background:var(--green);box-shadow:0 0 12px rgba(0,245,160,0.5);}
+.custom-marker.pending-m{background:var(--yellow);box-shadow:0 0 12px rgba(251,191,36,0.5);}
+.custom-marker.offline-m{background:var(--red);box-shadow:0 0 12px rgba(244,63,94,0.5);}
+.custom-marker.maintenance-m{background:#a78bfa;box-shadow:0 0 12px rgba(124,58,237,0.5);}
+.national-marker{width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid rgba(255,255,255,0.4);cursor:pointer;}
+.national-marker.active-m{background:var(--green);box-shadow:0 0 10px rgba(0,245,160,0.7);}
+.national-marker.pending-m{background:var(--yellow);box-shadow:0 0 10px rgba(251,191,36,0.7);}
+.national-marker.offline-m{background:var(--red);box-shadow:0 0 10px rgba(244,63,94,0.7);}
+.national-marker.maintenance-m{background:#a78bfa;box-shadow:0 0 10px rgba(124,58,237,0.7);}
+.leaflet-popup-content-wrapper{background:var(--surface) !important;border:1px solid var(--border) !important;border-radius:8px !important;color:var(--text) !important;font-family:var(--font-mono) !important;box-shadow:0 8px 32px rgba(0,0,0,0.5) !important;}
+.leaflet-popup-tip{background:var(--surface) !important;}
+.leaflet-popup-content{margin:12px 14px !important;font-size:0.75rem !important;}
+.popup-name{font-family:var(--font-head);font-weight:700;font-size:0.9rem;margin-bottom:4px;}
+.popup-addr{color:var(--text-dim);margin-bottom:8px;font-size:0.68rem;}
+.popup-open{background:var(--accent);color:var(--bg);border:none;padding:5px 12px;border-radius:4px;font-family:var(--font-head);font-weight:600;font-size:0.72rem;cursor:pointer;width:100%;margin-top:4px;}
+.empty-state{padding:40px 20px;text-align:center;color:var(--gray);font-size:0.75rem;}
+.empty-state-icon{font-size:2.5rem;margin-bottom:10px;opacity:0.4;}
+.leaflet-tile{filter:brightness(0.45) saturate(0.7) hue-rotate(185deg);}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════ AUTH SCREEN ══════════════════ -->
+<!-- AUTH -->
 <div id="authScreen">
   <div class="auth-card">
     <div class="auth-logo"><div class="auth-logo-dot"></div>Net<span>Track</span></div>
     <div class="auth-subtitle">IT/Network Hardware Installation Portal</div>
+    <div class="cred-warning" id="credWarning">
+      <strong>Supabase credentials not set.</strong><br>
+      In your <code>index.html</code>, find the lines near the top of the script block and replace <code>YOUR_PROJECT_URL</code> and <code>YOUR_ANON_PUBLIC_KEY</code> with your real values from Supabase &rarr; Settings &rarr; API.
+    </div>
 
     <!-- LOGIN -->
     <div class="auth-panel active" id="panelLogin">
@@ -351,7 +247,7 @@
       </div>
       <div class="auth-field">
         <label class="auth-label">Password</label>
-        <input class="auth-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password">
+        <input class="auth-input" id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password">
       </div>
       <div class="auth-error" id="loginError"></div>
       <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
@@ -369,11 +265,11 @@
         <input class="auth-input" id="regEmail" type="email" placeholder="you@company.com" autocomplete="email">
       </div>
       <div class="auth-field">
-        <label class="auth-label">Password</label>
-        <input class="auth-input" id="regPassword" type="password" placeholder="Min. 6 characters" autocomplete="new-password">
+        <label class="auth-label">Password (min 6 characters)</label>
+        <input class="auth-input" id="regPassword" type="password" placeholder="Choose a password" autocomplete="new-password">
       </div>
       <div class="auth-error" id="regError"></div>
-      <div class="auth-success" id="regSuccess">Account created! Check your email to confirm your account, then sign in.</div>
+      <div class="auth-success" id="regSuccess"></div>
       <button class="auth-btn" id="regBtn" onclick="doRegister()">Create Account</button>
       <hr class="auth-divider">
       <div class="auth-link">Already have an account? <a onclick="showPanel('panelLogin')">Sign in</a></div>
@@ -382,29 +278,29 @@
     <!-- FORGOT PASSWORD -->
     <div class="auth-panel" id="panelForgot">
       <div class="auth-heading">Reset password</div>
-      <div class="auth-desc">Enter your email and we'll send you a password reset link.</div>
+      <div class="auth-desc">Enter your email and we will send you a reset link.</div>
       <div class="auth-field">
         <label class="auth-label">Email address</label>
         <input class="auth-input" id="forgotEmail" type="email" placeholder="you@company.com">
       </div>
       <div class="auth-error" id="forgotError"></div>
-      <div class="auth-success" id="forgotSuccess">Reset link sent! Check your email inbox.</div>
+      <div class="auth-success" id="forgotSuccess"></div>
       <button class="auth-btn" id="forgotBtn" onclick="doForgot()">Send Reset Link</button>
       <hr class="auth-divider">
-      <div class="auth-link"><a onclick="showPanel('panelLogin')">← Back to sign in</a></div>
+      <div class="auth-link"><a onclick="showPanel('panelLogin')">Back to sign in</a></div>
     </div>
 
-    <!-- UPDATE PASSWORD (after clicking reset link in email) -->
+    <!-- SET NEW PASSWORD (after reset link) -->
     <div class="auth-panel" id="panelUpdatePw">
       <div class="auth-heading">Set new password</div>
       <div class="auth-desc">Choose a new password for your account.</div>
       <div class="auth-field">
         <label class="auth-label">New password</label>
-        <input class="auth-input" id="newPwInput" type="password" placeholder="Min. 6 characters">
+        <input class="auth-input" id="newPwInput" type="password" placeholder="Min 6 characters">
       </div>
       <div class="auth-field">
         <label class="auth-label">Confirm new password</label>
-        <input class="auth-input" id="newPwConfirm" type="password" placeholder="••••••••">
+        <input class="auth-input" id="newPwConfirm" type="password" placeholder="Repeat password">
       </div>
       <div class="auth-error" id="updatePwError"></div>
       <button class="auth-btn" id="updatePwBtn" onclick="doUpdatePassword()">Update Password</button>
@@ -413,13 +309,13 @@
   </div>
 </div>
 
-<!-- ══════════════════ APP SHELL ══════════════════ -->
+<!-- APP -->
 <div id="appShell">
   <header>
     <div class="logo"><div class="logo-dot"></div>Net<span>Track</span></div>
     <div class="header-center">
-      <button class="tab-btn active" id="tabDetail" onclick="switchTab('detail')">📍 Installations</button>
-      <button class="tab-btn" id="tabNational" onclick="switchTab('national')">🌐 National Overview</button>
+      <button class="tab-btn active" id="tabDetail" onclick="switchTab('detail')">Installations</button>
+      <button class="tab-btn" id="tabNational" onclick="switchTab('national')">National Overview</button>
     </div>
     <div class="header-right">
       <div class="header-stats" id="headerStats"></div>
@@ -428,29 +324,28 @@
         <div class="user-btn" onclick="toggleUserMenu()">
           <div class="user-avatar" id="userAvatar">?</div>
           <span id="userDisplayName">User</span>
-          <span style="color:var(--text-dim);font-size:0.6rem">▾</span>
+          <span style="color:var(--text-dim);font-size:0.6rem">&#x25BE;</span>
         </div>
         <div class="user-dropdown" id="userDropdown">
           <div class="dropdown-user-info">
-            <div class="dropdown-email" id="dropdownEmail">—</div>
+            <div class="dropdown-email" id="dropdownEmail">--</div>
           </div>
-          <button class="dropdown-item danger" onclick="doLogout()">↩ Sign Out</button>
+          <button class="dropdown-item danger" onclick="doLogout()">Sign Out</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- INSTALLATIONS VIEW -->
   <div class="view active" id="detailView">
     <div class="sidebar">
       <div class="sidebar-header">
         <input class="search-box" type="text" placeholder="Search installations..." id="searchInput" oninput="filterCards()">
         <div class="filter-row">
-          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
-          <button class="filter-btn" data-filter="active" onclick="setFilter('active',this)">Active</button>
-          <button class="filter-btn" data-filter="pending" onclick="setFilter('pending',this)">Pending</button>
-          <button class="filter-btn" data-filter="offline" onclick="setFilter('offline',this)">Offline</button>
-          <button class="filter-btn" data-filter="maintenance" onclick="setFilter('maintenance',this)">Maint.</button>
+          <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+          <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
+          <button class="filter-btn" onclick="setFilter('pending',this)">Pending</button>
+          <button class="filter-btn" onclick="setFilter('offline',this)">Offline</button>
+          <button class="filter-btn" onclick="setFilter('maintenance',this)">Maint.</button>
         </div>
       </div>
       <div class="installations-list" id="installationsList"></div>
@@ -458,18 +353,17 @@
     <div id="map"></div>
     <div class="detail-panel" id="detailPanel">
       <div class="detail-header">
-        <div class="detail-title" id="detailName">—</div>
-        <button class="btn-close" onclick="closeDetail()">✕</button>
+        <div class="detail-title" id="detailName">--</div>
+        <button class="btn-close" onclick="closeDetail()">X</button>
       </div>
       <div class="detail-body" id="detailBody"></div>
       <div class="detail-actions">
-        <button class="btn-edit" id="detailEditBtn">Edit Installation</button>
+        <button class="btn-edit" id="detailEditBtn">Edit</button>
         <button class="btn-delete" id="detailDeleteBtn">Delete</button>
       </div>
     </div>
   </div>
 
-  <!-- NATIONAL VIEW -->
   <div class="view" id="nationalView">
     <div id="nationalMap">
       <div class="map-legend">
@@ -483,11 +377,11 @@
     <div class="national-sidebar">
       <div class="national-sidebar-header">
         <div class="national-sidebar-title">Network Health</div>
-        <div class="national-sidebar-sub">Real-time overview of all installations</div>
+        <div class="national-sidebar-sub">Overview of all installations</div>
       </div>
       <div class="big-stats" id="bigStats"></div>
       <div class="health-section">
-        <div class="health-label"><span>Fleet Health</span><span id="healthPct">—</span></div>
+        <div class="health-label"><span>Fleet Health</span><span id="healthPct">--</span></div>
         <div class="health-bar" id="healthBar"></div>
       </div>
       <div class="alerts-section">
@@ -498,12 +392,12 @@
   </div>
 </div>
 
-<!-- ADD / EDIT MODAL -->
+<!-- INSTALL MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modalTitle">New Installation</div>
-      <button class="btn-close" onclick="closeModal()">✕</button>
+      <button class="btn-close" onclick="closeModal()">X</button>
     </div>
     <div class="modal-body">
       <div class="form-row">
@@ -512,12 +406,12 @@
       </div>
       <div class="form-group" style="margin-bottom:14px">
         <label class="form-label">Address / Location *</label>
-        <div class="address-row" id="addressWrap">
+        <div class="address-row">
           <input class="form-input" id="f-address" placeholder="Start typing an address..." autocomplete="off" oninput="onAddressInput()" onblur="hideSuggestionsDelayed()">
-          <button class="geocode-btn" id="geocodeBtn" onclick="geocodeAddress()" type="button">📍 Locate</button>
+          <button class="geocode-btn" id="geocodeBtn" onclick="geocodeAddress()" type="button">Locate</button>
           <div class="suggestions-list" id="suggestionsList"></div>
         </div>
-        <div class="geocode-status info" id="geocodeStatus">Type an address and click Locate, or select a suggestion.</div>
+        <div class="geocode-status info" id="geocodeStatus">Type an address and click Locate, or pick a suggestion.</div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Status *</label>
@@ -537,7 +431,7 @@
         <div class="form-group"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Notes / Documents</label><textarea class="form-textarea" id="f-notes" placeholder="Add any notes, document links, or additional details..."></textarea></div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="f-notes" placeholder="Additional notes..."></textarea></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -549,408 +443,434 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-// ══════════════════════════════════════════════════════════════
-//  ▼▼▼  PASTE YOUR SUPABASE CREDENTIALS HERE  ▼▼▼
-// ══════════════════════════════════════════════════════════════
-const SUPABASE_URL = 'https://vyitkfborjigmqsoscfg.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_ERYvEm4sGTzMZbAlYIUf6g_aAFYqQFB'
-// ══════════════════════════════════════════════════════════════
+// ================================================================
+//  STEP 1: PASTE YOUR SUPABASE CREDENTIALS BELOW
+// ================================================================
+var SUPABASE_URL = 'https://YOUR_PROJECT_URL.supabase.co';
+var SUPABASE_KEY = 'YOUR_ANON_PUBLIC_KEY';
+// ================================================================
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+var _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── AUTH HELPERS ──────────────────────────────────────────────
+// Show warning if credentials not set
+if (SUPABASE_URL.indexOf('YOUR_PROJECT_URL') !== -1 || SUPABASE_KEY.indexOf('YOUR_ANON') !== -1) {
+  document.getElementById('credWarning').style.display = 'block';
+}
+
+// ---- AUTH HELPERS ----
 function showPanel(id) {
-  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'))
-  document.getElementById(id).classList.add('active')
-  document.querySelectorAll('.auth-error').forEach(e => { e.textContent=''; e.classList.remove('visible') })
-  document.querySelectorAll('.auth-success').forEach(e => e.classList.remove('visible'))
-  document.querySelectorAll('.auth-input').forEach(i => i.classList.remove('error'))
+  document.querySelectorAll('.auth-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.auth-error').forEach(function(e) { e.textContent = ''; e.classList.remove('visible'); });
+  document.querySelectorAll('.auth-success').forEach(function(e) { e.textContent = ''; e.classList.remove('visible'); });
 }
 
-function showAuthError(id, msg) {
-  const el = document.getElementById(id)
-  el.textContent = msg; el.classList.add('visible')
-}
-function showAuthSuccess(id, msg) {
-  const el = document.getElementById(id)
-  el.textContent = msg; el.classList.add('visible')
+function showErr(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('visible');
 }
 
-function setLoading(btnId, loading) {
-  const btn = document.getElementById(btnId)
-  btn.disabled = loading
-  if (loading) {
-    btn.dataset.orig = btn.innerHTML
-    btn.innerHTML = '<span class="spinner"></span> Please wait...'
-  } else {
-    btn.innerHTML = btn.dataset.orig || btn.innerHTML
-  }
+function showOk(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('visible');
 }
 
-// ── SIGN IN ───────────────────────────────────────────────────
+function setBtnLoading(btnId, loading, label) {
+  var btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Please wait...' : label;
+}
+
+// ---- SIGN IN ----
 async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim()
-  const password = document.getElementById('loginPassword').value
-  if (!email || !password) { showAuthError('loginError', 'Please fill in all fields.'); return }
+  var email = document.getElementById('loginEmail').value.trim();
+  var pw = document.getElementById('loginPassword').value;
 
-  setLoading('loginBtn', true)
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-  setLoading('loginBtn', false)
+  document.getElementById('loginError').classList.remove('visible');
 
-  if (error) { showAuthError('loginError', error.message); return }
-  launchApp(data.user)
-}
+  if (!email || !pw) { showErr('loginError', 'Please enter your email and password.'); return; }
 
-// ── SIGN UP ───────────────────────────────────────────────────
-async function doRegister() {
-  const email = document.getElementById('regEmail').value.trim()
-  const password = document.getElementById('regPassword').value
-  if (!email || !password) { showAuthError('regError', 'Please fill in all fields.'); return }
-  if (password.length < 6) { showAuthError('regError', 'Password must be at least 6 characters.'); return }
-
-  setLoading('regBtn', true)
-  const { error } = await supabase.auth.signUp({ email, password })
-  setLoading('regBtn', false)
-
-  if (error) { showAuthError('regError', error.message); return }
-  showAuthSuccess('regSuccess', 'Account created! Check your email to confirm, then sign in.')
-}
-
-// ── FORGOT PASSWORD ───────────────────────────────────────────
-async function doForgot() {
-  const email = document.getElementById('forgotEmail').value.trim()
-  if (!email) { showAuthError('forgotError', 'Please enter your email address.'); return }
-
-  setLoading('forgotBtn', true)
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + window.location.pathname
-  })
-  setLoading('forgotBtn', false)
-
-  if (error) { showAuthError('forgotError', error.message); return }
-  showAuthSuccess('forgotSuccess', 'Reset link sent! Check your email inbox.')
-}
-
-// ── UPDATE PASSWORD (after clicking email link) ───────────────
-async function doUpdatePassword() {
-  const pw = document.getElementById('newPwInput').value
-  const confirm = document.getElementById('newPwConfirm').value
-  if (!pw || !confirm) { showAuthError('updatePwError', 'Please fill in all fields.'); return }
-  if (pw.length < 6) { showAuthError('updatePwError', 'Password must be at least 6 characters.'); return }
-  if (pw !== confirm) { showAuthError('updatePwError', 'Passwords do not match.'); return }
-
-  setLoading('updatePwBtn', true)
-  const { error } = await supabase.auth.updateUser({ password: pw })
-  setLoading('updatePwBtn', false)
-
-  if (error) { showAuthError('updatePwError', error.message); return }
-  alert('Password updated! You are now signed in.')
-  launchApp((await supabase.auth.getUser()).data.user)
-}
-
-// ── SIGN OUT ──────────────────────────────────────────────────
-async function doLogout() {
-  await supabase.auth.signOut()
-  document.getElementById('appShell').classList.remove('visible')
-  document.getElementById('authScreen').classList.remove('hidden')
-  showPanel('panelLogin')
-  closeUserMenu()
-}
-
-// ── SESSION LISTENER ──────────────────────────────────────────
-// Handles: normal login, page refresh, AND password reset redirect
-supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'PASSWORD_RECOVERY') {
-    // User clicked the reset link in their email
-    document.getElementById('authScreen').classList.remove('hidden')
-    document.getElementById('appShell').classList.remove('visible')
-    showPanel('panelUpdatePw')
-  } else if (event === 'SIGNED_IN' && session) {
-    launchApp(session.user)
-  } else if (event === 'SIGNED_OUT') {
-    document.getElementById('appShell').classList.remove('visible')
-    document.getElementById('authScreen').classList.remove('hidden')
+  if (SUPABASE_URL.indexOf('YOUR_PROJECT_URL') !== -1) {
+    showErr('loginError', 'Supabase credentials are not configured yet. See the yellow box above.');
+    return;
   }
-})
 
-// ── LAUNCH APP ────────────────────────────────────────────────
+  setBtnLoading('loginBtn', true, 'Sign In');
+
+  try {
+    var result = await _supabase.auth.signInWithPassword({ email: email, password: pw });
+    if (result.error) {
+      var msg = result.error.message;
+      if (msg.indexOf('Invalid login') !== -1) msg = 'Wrong email or password. Please try again.';
+      if (msg.indexOf('Email not confirmed') !== -1) msg = 'Email not confirmed. In Supabase go to Authentication > Providers > Email and turn off "Confirm email", then try again.';
+      if (msg.indexOf('fetch') !== -1 || msg.indexOf('network') !== -1) msg = 'Cannot connect to Supabase. Check your SUPABASE_URL is correct.';
+      showErr('loginError', msg);
+      setBtnLoading('loginBtn', false, 'Sign In');
+    } else {
+      setBtnLoading('loginBtn', false, 'Sign In');
+      launchApp(result.data.user);
+    }
+  } catch(e) {
+    showErr('loginError', 'Error: ' + e.message);
+    setBtnLoading('loginBtn', false, 'Sign In');
+  }
+}
+
+// ---- REGISTER ----
+async function doRegister() {
+  var email = document.getElementById('regEmail').value.trim();
+  var pw = document.getElementById('regPassword').value;
+  if (!email || !pw) { showErr('regError', 'Please fill in all fields.'); return; }
+  if (pw.length < 6) { showErr('regError', 'Password must be at least 6 characters.'); return; }
+  setBtnLoading('regBtn', true, 'Create Account');
+  try {
+    var result = await _supabase.auth.signUp({ email: email, password: pw });
+    if (result.error) {
+      showErr('regError', result.error.message);
+    } else {
+      showOk('regSuccess', 'Account created! Check your email to confirm, then sign in. (Or turn off email confirmation in Supabase.)');
+    }
+  } catch(e) { showErr('regError', 'Error: ' + e.message); }
+  setBtnLoading('regBtn', false, 'Create Account');
+}
+
+// ---- FORGOT PASSWORD ----
+async function doForgot() {
+  var email = document.getElementById('forgotEmail').value.trim();
+  if (!email) { showErr('forgotError', 'Please enter your email address.'); return; }
+  setBtnLoading('forgotBtn', true, 'Send Reset Link');
+  try {
+    var result = await _supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if (result.error) { showErr('forgotError', result.error.message); }
+    else { showOk('forgotSuccess', 'Reset link sent! Check your inbox.'); }
+  } catch(e) { showErr('forgotError', 'Error: ' + e.message); }
+  setBtnLoading('forgotBtn', false, 'Send Reset Link');
+}
+
+// ---- UPDATE PASSWORD ----
+async function doUpdatePassword() {
+  var pw = document.getElementById('newPwInput').value;
+  var conf = document.getElementById('newPwConfirm').value;
+  if (!pw || !conf) { showErr('updatePwError', 'Please fill in both fields.'); return; }
+  if (pw.length < 6) { showErr('updatePwError', 'Password must be at least 6 characters.'); return; }
+  if (pw !== conf) { showErr('updatePwError', 'Passwords do not match.'); return; }
+  setBtnLoading('updatePwBtn', true, 'Update Password');
+  try {
+    var result = await _supabase.auth.updateUser({ password: pw });
+    if (result.error) { showErr('updatePwError', result.error.message); }
+    else {
+      alert('Password updated! You are now signed in.');
+      var u = await _supabase.auth.getUser();
+      launchApp(u.data.user);
+    }
+  } catch(e) { showErr('updatePwError', 'Error: ' + e.message); }
+  setBtnLoading('updatePwBtn', false, 'Update Password');
+}
+
+// ---- SIGN OUT ----
+async function doLogout() {
+  await _supabase.auth.signOut();
+  document.getElementById('appShell').classList.remove('visible');
+  document.getElementById('authScreen').classList.remove('hidden');
+  showPanel('panelLogin');
+  closeUserMenu();
+}
+
+// ---- LISTEN FOR AUTH CHANGES ----
+_supabase.auth.onAuthStateChange(function(event, session) {
+  if (event === 'PASSWORD_RECOVERY') {
+    document.getElementById('authScreen').classList.remove('hidden');
+    document.getElementById('appShell').classList.remove('visible');
+    showPanel('panelUpdatePw');
+  } else if (event === 'SIGNED_IN' && session) {
+    launchApp(session.user);
+  } else if (event === 'SIGNED_OUT') {
+    document.getElementById('appShell').classList.remove('visible');
+    document.getElementById('authScreen').classList.remove('hidden');
+  }
+});
+
+// ---- LAUNCH APP ----
 function launchApp(user) {
-  document.getElementById('authScreen').classList.add('hidden')
-  document.getElementById('appShell').classList.add('visible')
-  const email = user.email || ''
-  const initials = email.slice(0, 2).toUpperCase()
-  document.getElementById('userAvatar').textContent = initials
-  document.getElementById('userDisplayName').textContent = email.split('@')[0]
-  document.getElementById('dropdownEmail').textContent = email
-  setTimeout(() => { map.invalidateSize(); renderAll(); }, 100)
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('appShell').classList.add('visible');
+  var email = user.email || '';
+  document.getElementById('userAvatar').textContent = email.slice(0,2).toUpperCase();
+  document.getElementById('userDisplayName').textContent = email.split('@')[0];
+  document.getElementById('dropdownEmail').textContent = email;
+  setTimeout(function() { map.invalidateSize(); renderAll(); }, 100);
 }
 
 // User dropdown
-function toggleUserMenu() { document.getElementById('userDropdown').classList.toggle('open') }
-function closeUserMenu() { document.getElementById('userDropdown').classList.remove('open') }
-document.addEventListener('click', e => { if (!e.target.closest('.user-menu-wrap')) closeUserMenu() })
+function toggleUserMenu() { document.getElementById('userDropdown').classList.toggle('open'); }
+function closeUserMenu() { document.getElementById('userDropdown').classList.remove('open'); }
+document.addEventListener('click', function(e) { if (!e.target.closest('.user-menu-wrap')) closeUserMenu(); });
 
-// Enter key support
-document.getElementById('loginPassword').addEventListener('keydown', e => { if(e.key==='Enter') doLogin() })
-document.getElementById('loginEmail').addEventListener('keydown', e => { if(e.key==='Enter') doLogin() })
-document.getElementById('regPassword').addEventListener('keydown', e => { if(e.key==='Enter') doRegister() })
-document.getElementById('newPwConfirm').addEventListener('keydown', e => { if(e.key==='Enter') doUpdatePassword() })
+// Enter key
+document.getElementById('loginPassword').addEventListener('keydown', function(e) { if(e.key==='Enter') doLogin(); });
+document.getElementById('loginEmail').addEventListener('keydown', function(e) { if(e.key==='Enter') doLogin(); });
+document.getElementById('regPassword').addEventListener('keydown', function(e) { if(e.key==='Enter') doRegister(); });
 
-// ══════════════════════════════════════════════════════════════
+// ================================================================
 //  DATA
-// ══════════════════════════════════════════════════════════════
-const STORAGE_KEY = 'nettrack_installations'
-const SAMPLE_DATA = [
-  { id:1, name:'Core Switch HQ', type:'Cisco Catalyst 9300', address:'350 Fifth Ave, New York, NY', status:'active', team:'Network Ops Team A', contact:'Marcus Johnson', installDate:'2023-03-15', maintDate:'2025-06-01', lat:40.7484, lng:-73.9856, notes:'Primary core switch for HQ building.' },
-  { id:2, name:'Edge Router — Brooklyn', type:'Juniper MX204', address:'1 MetroTech Center, Brooklyn, NY', status:'active', team:'Network Ops Team B', contact:'Priya Patel', installDate:'2023-07-22', maintDate:'2025-07-22', lat:40.6926, lng:-73.9872, notes:'Handles all Brooklyn office egress traffic.' },
-  { id:3, name:'Wireless AP Cluster — Jersey', type:'Aruba AP-535', address:'30 Hudson St, Jersey City, NJ', status:'pending', team:'Field Install Team', contact:'Tyler Ross', installDate:'', maintDate:'2025-08-15', lat:40.7178, lng:-74.0431, notes:'Awaiting final survey approval.' },
-  { id:4, name:'Firewall Node — Bronx', type:'Palo Alto PA-3260', address:'851 Grand Concourse, Bronx, NY', status:'maintenance', team:'Security Ops', contact:'Adaeze Obi', installDate:'2022-11-05', maintDate:'2025-05-10', lat:40.8448, lng:-73.9285, notes:'Firmware upgrade in progress.' },
-  { id:5, name:'Backup Router — Queens', type:'Cisco ASR 1002-X', address:'74-09 37th Ave, Jackson Heights, NY', status:'offline', team:'Network Ops Team A', contact:'Marcus Johnson', installDate:'2021-06-30', maintDate:'2024-12-01', lat:40.7476, lng:-73.8919, notes:'Hardware failure. Replacement on order.' },
-  { id:6, name:'West Coast Hub — LA', type:'Arista 7280R', address:'633 W 5th St, Los Angeles, CA', status:'active', team:'West Coast Ops', contact:'Sofia Reyes', installDate:'2023-01-10', maintDate:'2025-09-01', lat:34.0522, lng:-118.2437, notes:'Primary west coast backbone node.' },
-  { id:7, name:'Data Center — Chicago', type:'Cisco Nexus 9000', address:'311 W Monroe St, Chicago, IL', status:'active', team:'Midwest Ops', contact:'James Park', installDate:'2022-08-20', maintDate:'2025-08-20', lat:41.8819, lng:-87.6278, notes:'Central midwest data center switch.' },
-  { id:8, name:'Gateway Node — Dallas', type:'Juniper PTX5000', address:'1500 Marilla St, Dallas, TX', status:'pending', team:'South Ops', contact:'Rita Vasquez', installDate:'', maintDate:'2025-10-01', lat:32.7767, lng:-96.7970, notes:'Awaiting rack installation.' },
-  { id:9, name:'Relay — Seattle', type:'Cisco ASR 9000', address:'401 5th Ave, Seattle, WA', status:'active', team:'West Coast Ops', contact:'Lena Brooks', installDate:'2023-04-05', maintDate:'2025-11-01', lat:47.6062, lng:-122.3321, notes:'Pacific Northwest relay node.' },
-  { id:10, name:'Edge Node — Miami', type:'Nokia 7750', address:'444 Brickell Ave, Miami, FL', status:'offline', team:'South Ops', contact:'Carlos Diaz', installDate:'2022-03-15', maintDate:'2024-09-01', lat:25.7617, lng:-80.1918, notes:'Storm damage reported. Awaiting parts.' },
-]
+// ================================================================
+var STORAGE_KEY = 'nettrack_installations';
+var SAMPLE_DATA = [
+  {id:1,name:'Core Switch HQ',type:'Cisco Catalyst 9300',address:'350 Fifth Ave, New York, NY',status:'active',team:'Network Ops Team A',contact:'Marcus Johnson',installDate:'2023-03-15',maintDate:'2025-06-01',lat:40.7484,lng:-73.9856,notes:'Primary core switch.'},
+  {id:2,name:'Edge Router Brooklyn',type:'Juniper MX204',address:'1 MetroTech Center, Brooklyn, NY',status:'active',team:'Network Ops Team B',contact:'Priya Patel',installDate:'2023-07-22',maintDate:'2025-07-22',lat:40.6926,lng:-73.9872,notes:'Brooklyn office egress.'},
+  {id:3,name:'AP Cluster Jersey',type:'Aruba AP-535',address:'30 Hudson St, Jersey City, NJ',status:'pending',team:'Field Install Team',contact:'Tyler Ross',installDate:'',maintDate:'2025-08-15',lat:40.7178,lng:-74.0431,notes:'Awaiting survey approval.'},
+  {id:4,name:'Firewall Bronx',type:'Palo Alto PA-3260',address:'851 Grand Concourse, Bronx, NY',status:'maintenance',team:'Security Ops',contact:'Adaeze Obi',installDate:'2022-11-05',maintDate:'2025-05-10',lat:40.8448,lng:-73.9285,notes:'Firmware upgrade in progress.'},
+  {id:5,name:'Backup Router Queens',type:'Cisco ASR 1002-X',address:'74-09 37th Ave, Jackson Heights, NY',status:'offline',team:'Network Ops Team A',contact:'Marcus Johnson',installDate:'2021-06-30',maintDate:'2024-12-01',lat:40.7476,lng:-73.8919,notes:'Hardware failure.'},
+  {id:6,name:'West Coast Hub LA',type:'Arista 7280R',address:'633 W 5th St, Los Angeles, CA',status:'active',team:'West Coast Ops',contact:'Sofia Reyes',installDate:'2023-01-10',maintDate:'2025-09-01',lat:34.0522,lng:-118.2437,notes:'West coast backbone.'},
+  {id:7,name:'Data Center Chicago',type:'Cisco Nexus 9000',address:'311 W Monroe St, Chicago, IL',status:'active',team:'Midwest Ops',contact:'James Park',installDate:'2022-08-20',maintDate:'2025-08-20',lat:41.8819,lng:-87.6278,notes:'Midwest data center.'},
+  {id:8,name:'Gateway Dallas',type:'Juniper PTX5000',address:'1500 Marilla St, Dallas, TX',status:'pending',team:'South Ops',contact:'Rita Vasquez',installDate:'',maintDate:'2025-10-01',lat:32.7767,lng:-96.7970,notes:'Awaiting rack install.'},
+  {id:9,name:'Relay Seattle',type:'Cisco ASR 9000',address:'401 5th Ave, Seattle, WA',status:'active',team:'West Coast Ops',contact:'Lena Brooks',installDate:'2023-04-05',maintDate:'2025-11-01',lat:47.6062,lng:-122.3321,notes:'Pacific NW relay.'},
+  {id:10,name:'Edge Node Miami',type:'Nokia 7750',address:'444 Brickell Ave, Miami, FL',status:'offline',team:'South Ops',contact:'Carlos Diaz',installDate:'2022-03-15',maintDate:'2024-09-01',lat:25.7617,lng:-80.1918,notes:'Storm damage.'}
+];
 
 function loadData() {
-  const s = localStorage.getItem(STORAGE_KEY)
-  if (s) return JSON.parse(s)
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_DATA))
-  return SAMPLE_DATA
+  var s = localStorage.getItem(STORAGE_KEY);
+  if (s) return JSON.parse(s);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_DATA));
+  return SAMPLE_DATA;
 }
-function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)) }
+function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
 
-let installations = loadData()
-let currentFilter = 'all'
-let selectedId = null
-let editingId = null
-let markers = {}
-let nationalMarkers = {}
-let nationalMapInited = false
-let nationalMapObj = null
-let currentTab = 'detail'
-let geocodedLat = null, geocodedLng = null, geocodedAddress = null
-let suggestionTimeout = null
+var installations = loadData();
+var currentFilter = 'all';
+var selectedId = null;
+var editingId = null;
+var markers = {};
+var nationalMarkers = {};
+var nationalMapInited = false;
+var nationalMapObj = null;
+var currentTab = 'detail';
+var geocodedLat = null, geocodedLng = null;
+var suggestionTimeout = null;
 
-// ── MAPS ──────────────────────────────────────────────────────
-const map = L.map('map', { zoomControl: false }).setView([39.5, -98.35], 4)
-L.control.zoom({ position: 'bottomright' }).addTo(map)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map)
+// ================================================================
+//  MAPS
+// ================================================================
+var map = L.map('map', {zoomControl:false}).setView([39.5,-98.35],4);
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'OpenStreetMap'}).addTo(map);
 
-const statusClassMap = { active:'active-m', pending:'pending-m', offline:'offline-m', maintenance:'maintenance-m' }
-function createMarkerIcon(s) { return L.divIcon({ className:'', html:`<div class="custom-marker ${statusClassMap[s]}"><span class="icon">📡</span></div>`, iconSize:[32,32], iconAnchor:[16,32], popupAnchor:[0,-34] }) }
-function createNationalMarkerIcon(s) { return L.divIcon({ className:'', html:`<div class="national-marker ${statusClassMap[s]}"></div>`, iconSize:[20,20], iconAnchor:[10,20], popupAnchor:[0,-22] }) }
+var statusClassMap = {active:'active-m',pending:'pending-m',offline:'offline-m',maintenance:'maintenance-m'};
+
+function mkIcon(s) {
+  return L.divIcon({className:'',html:'<div class="custom-marker '+statusClassMap[s]+'"><span class="icon">&#x1F4E1;</span></div>',iconSize:[32,32],iconAnchor:[16,32],popupAnchor:[0,-34]});
+}
+function mkNatIcon(s) {
+  return L.divIcon({className:'',html:'<div class="national-marker '+statusClassMap[s]+'"></div>',iconSize:[20,20],iconAnchor:[10,20],popupAnchor:[0,-22]});
+}
 
 function initNationalMap() {
-  if (nationalMapInited) return
-  nationalMapObj = L.map('nationalMap', { zoomControl: false }).setView([39.5, -98.35], 4)
-  L.control.zoom({ position: 'bottomright' }).addTo(nationalMapObj)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(nationalMapObj)
-  nationalMapInited = true
-  renderNationalMarkers()
+  if (nationalMapInited) return;
+  nationalMapObj = L.map('nationalMap',{zoomControl:false}).setView([39.5,-98.35],4);
+  L.control.zoom({position:'bottomright'}).addTo(nationalMapObj);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'OpenStreetMap'}).addTo(nationalMapObj);
+  nationalMapInited = true;
+  renderNationalMarkers();
 }
 
 function renderNationalMarkers() {
-  if (!nationalMapObj) return
-  Object.values(nationalMarkers).forEach(m => nationalMapObj.removeLayer(m)); nationalMarkers = {}
-  installations.forEach(inst => {
-    if (!inst.lat || !inst.lng) return
-    const m = L.marker([inst.lat, inst.lng], { icon: createNationalMarkerIcon(inst.status) }).addTo(nationalMapObj)
-    m.bindPopup(`<div class="popup-name">${inst.name}</div><div class="popup-addr">${inst.address}</div><div style="margin-bottom:6px"><span class="status-badge status-${inst.status}">${inst.status.toUpperCase()}</span></div><button class="popup-open" onclick="goToInstallation(${inst.id})">Open Detail View</button>`)
-    nationalMarkers[inst.id] = m
-  })
+  if (!nationalMapObj) return;
+  Object.values(nationalMarkers).forEach(function(m){nationalMapObj.removeLayer(m);});
+  nationalMarkers = {};
+  installations.forEach(function(inst) {
+    if (!inst.lat||!inst.lng) return;
+    var m = L.marker([inst.lat,inst.lng],{icon:mkNatIcon(inst.status)}).addTo(nationalMapObj);
+    m.bindPopup('<div class="popup-name">'+inst.name+'</div><div class="popup-addr">'+inst.address+'</div><button class="popup-open" onclick="goToInstallation('+inst.id+')">Open Detail View</button>');
+    nationalMarkers[inst.id] = m;
+  });
 }
 
-function goToInstallation(id) { switchTab('detail'); setTimeout(() => selectInstallation(id), 120) }
+function goToInstallation(id) { switchTab('detail'); setTimeout(function(){selectInstallation(id);},120); }
 
-// ── TABS ──────────────────────────────────────────────────────
 function switchTab(tab) {
-  currentTab = tab
-  document.getElementById('detailView').classList.toggle('active', tab==='detail')
-  document.getElementById('nationalView').classList.toggle('active', tab==='national')
-  document.getElementById('tabDetail').classList.toggle('active', tab==='detail')
-  document.getElementById('tabNational').classList.toggle('active', tab==='national')
-  if (tab==='national') setTimeout(() => { initNationalMap(); nationalMapObj.invalidateSize(); renderNationalMarkers(); renderNationalStats(); renderAlerts() }, 60)
+  currentTab = tab;
+  document.getElementById('detailView').classList.toggle('active',tab==='detail');
+  document.getElementById('nationalView').classList.toggle('active',tab==='national');
+  document.getElementById('tabDetail').classList.toggle('active',tab==='detail');
+  document.getElementById('tabNational').classList.toggle('active',tab==='national');
+  if (tab==='national') setTimeout(function(){initNationalMap();nationalMapObj.invalidateSize();renderNationalMarkers();renderNationalStats();renderAlerts();},60);
 }
 
-// ── NATIONAL STATS ────────────────────────────────────────────
 function renderNationalStats() {
-  const c = { active:0, pending:0, offline:0, maintenance:0 }
-  installations.forEach(i => c[i.status]++)
-  const total = installations.length
-  document.getElementById('bigStats').innerHTML = `
-    <div class="big-stat s-total" style="grid-column:span 2"><div class="big-stat-num">${total}</div><div class="big-stat-label">Total Installations</div></div>
-    <div class="big-stat s-active"><div class="big-stat-num">${c.active}</div><div class="big-stat-label">Active</div></div>
-    <div class="big-stat s-pending"><div class="big-stat-num">${c.pending}</div><div class="big-stat-label">Pending</div></div>
-    <div class="big-stat s-offline"><div class="big-stat-num">${c.offline}</div><div class="big-stat-label">Offline</div></div>
-    <div class="big-stat s-maintenance"><div class="big-stat-num">${c.maintenance}</div><div class="big-stat-label">Maintenance</div></div>`
-  const pct = total ? Math.round((c.active/total)*100) : 0
-  document.getElementById('healthPct').textContent = `${pct}% healthy`
-  const segs = [{color:'#00f5a0',count:c.active},{color:'#fbbf24',count:c.pending},{color:'#a78bfa',count:c.maintenance},{color:'#f43f5e',count:c.offline}]
-  document.getElementById('healthBar').innerHTML = segs.filter(s=>s.count>0).map(s=>`<div class="health-segment" style="width:${(s.count/total)*100}%;background:${s.color}"></div>`).join('')
+  var c={active:0,pending:0,offline:0,maintenance:0};
+  installations.forEach(function(i){c[i.status]++;});
+  var total=installations.length;
+  document.getElementById('bigStats').innerHTML=
+    '<div class="big-stat s-total" style="grid-column:span 2"><div class="big-stat-num">'+total+'</div><div class="big-stat-label">Total</div></div>'+
+    '<div class="big-stat s-active"><div class="big-stat-num">'+c.active+'</div><div class="big-stat-label">Active</div></div>'+
+    '<div class="big-stat s-pending"><div class="big-stat-num">'+c.pending+'</div><div class="big-stat-label">Pending</div></div>'+
+    '<div class="big-stat s-offline"><div class="big-stat-num">'+c.offline+'</div><div class="big-stat-label">Offline</div></div>'+
+    '<div class="big-stat s-maintenance"><div class="big-stat-num">'+c.maintenance+'</div><div class="big-stat-label">Maintenance</div></div>';
+  var pct=total?Math.round((c.active/total)*100):0;
+  document.getElementById('healthPct').textContent=pct+'% healthy';
+  var segs=[{color:'#00f5a0',count:c.active},{color:'#fbbf24',count:c.pending},{color:'#a78bfa',count:c.maintenance},{color:'#f43f5e',count:c.offline}];
+  document.getElementById('healthBar').innerHTML=segs.filter(function(s){return s.count>0;}).map(function(s){return '<div class="health-segment" style="width:'+(s.count/total*100)+'%;background:'+s.color+'"></div>';}).join('');
 }
 
 function renderAlerts() {
-  const na = installations.filter(i => i.status !== 'active')
-  const colors = { offline:'#f43f5e', maintenance:'#a78bfa', pending:'#fbbf24' }
-  const list = document.getElementById('alertsList')
-  if (!na.length) { list.innerHTML=`<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon">✅</div>All systems healthy!</div>`; return }
-  na.sort((a,b)=>({offline:0,maintenance:1,pending:2}[a.status]||3)-({offline:0,maintenance:1,pending:2}[b.status]||3))
-  list.innerHTML = na.map(i=>`<div class="alert-item" onclick="goToInstallation(${i.id})"><div class="alert-dot" style="background:${colors[i.status]}"></div><div><div class="alert-name">${i.name}</div><div class="alert-meta">${i.address}</div><div style="margin-top:4px"><span class="status-badge status-${i.status}">${i.status}</span></div></div></div>`).join('')
+  var na=installations.filter(function(i){return i.status!=='active';});
+  var colors={offline:'#f43f5e',maintenance:'#a78bfa',pending:'#fbbf24'};
+  var list=document.getElementById('alertsList');
+  if(!na.length){list.innerHTML='<div class="empty-state"><div class="empty-state-icon">OK</div>All systems healthy!</div>';return;}
+  na.sort(function(a,b){return ({offline:0,maintenance:1,pending:2}[a.status]||3)-({offline:0,maintenance:1,pending:2}[b.status]||3);});
+  list.innerHTML=na.map(function(i){return '<div class="alert-item" onclick="goToInstallation('+i.id+')"><div class="alert-dot" style="background:'+colors[i.status]+'"></div><div><div class="alert-name">'+i.name+'</div><div class="alert-meta">'+i.address+'</div><div style="margin-top:4px"><span class="status-badge status-'+i.status+'">'+i.status+'</span></div></div></div>';}).join('');
 }
 
-// ── RENDER ────────────────────────────────────────────────────
 function renderAll() {
-  installations = loadData()
-  renderCards(); renderMarkers(); renderHeaderStats()
-  if (currentTab==='national' && nationalMapInited) { renderNationalMarkers(); renderNationalStats(); renderAlerts() }
+  installations=loadData();
+  renderCards();renderMarkers();renderHeaderStats();
+  if(currentTab==='national'&&nationalMapInited){renderNationalMarkers();renderNationalStats();renderAlerts();}
 }
 
 function renderHeaderStats() {
-  const c={active:0,pending:0,offline:0,maintenance:0}
-  installations.forEach(i=>c[i.status]++)
-  const cols={active:'#00f5a0',pending:'#fbbf24',offline:'#f43f5e',maintenance:'#a78bfa'}
-  document.getElementById('headerStats').innerHTML=Object.entries(c).map(([k,v])=>`<div class="stat-pill"><div class="stat-dot" style="background:${cols[k]}"></div>${k} <span class="stat-num">${v}</span></div>`).join('')
+  var c={active:0,pending:0,offline:0,maintenance:0};
+  installations.forEach(function(i){c[i.status]++;});
+  var cols={active:'#00f5a0',pending:'#fbbf24',offline:'#f43f5e',maintenance:'#a78bfa'};
+  document.getElementById('headerStats').innerHTML=Object.keys(c).map(function(k){return '<div class="stat-pill"><div class="stat-dot" style="background:'+cols[k]+'"></div>'+k+' <span class="stat-num">'+c[k]+'</span></div>';}).join('');
 }
 
 function getFiltered() {
-  const q=document.getElementById('searchInput').value.toLowerCase()
-  return installations.filter(i=>(currentFilter==='all'||i.status===currentFilter)&&(!q||i.name.toLowerCase().includes(q)||i.address.toLowerCase().includes(q)||(i.team||'').toLowerCase().includes(q)))
+  var q=document.getElementById('searchInput').value.toLowerCase();
+  return installations.filter(function(i){
+    return (currentFilter==='all'||i.status===currentFilter)&&(!q||i.name.toLowerCase().includes(q)||i.address.toLowerCase().includes(q)||(i.team||'').toLowerCase().includes(q));
+  });
 }
 
 function renderCards() {
-  const list=document.getElementById('installationsList')
-  const f=getFiltered()
-  if(!f.length){list.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📡</div>No installations found.</div>`;return}
-  list.innerHTML=f.map(i=>`<div class="install-card status-${i.status} ${selectedId===i.id?'selected':''}" onclick="selectInstallation(${i.id})"><div class="card-top"><div class="card-name">${i.name}</div><span class="status-badge status-${i.status}">${i.status}</span></div><div class="card-addr">📍 ${i.address}</div><div class="card-meta"><span>👥 ${i.team||'—'}</span>${i.maintDate?`<span>🔧 ${i.maintDate}</span>`:''}</div></div>`).join('')
+  var list=document.getElementById('installationsList');
+  var f=getFiltered();
+  if(!f.length){list.innerHTML='<div class="empty-state"><div class="empty-state-icon">No results</div>No installations found.</div>';return;}
+  list.innerHTML=f.map(function(i){return '<div class="install-card status-'+i.status+(selectedId===i.id?' selected':'')+'" onclick="selectInstallation('+i.id+')"><div class="card-top"><div class="card-name">'+i.name+'</div><span class="status-badge status-'+i.status+'">'+i.status+'</span></div><div class="card-addr">'+i.address+'</div><div class="card-meta"><span>'+( i.team||'--')+'</span>'+(i.maintDate?'<span>'+i.maintDate+'</span>':'')+'</div></div>';}).join('');
 }
 
 function renderMarkers() {
-  Object.values(markers).forEach(m=>map.removeLayer(m)); markers={}
-  const valid=installations.filter(i=>i.lat&&i.lng)
-  valid.forEach(inst=>{
-    const m=L.marker([inst.lat,inst.lng],{icon:createMarkerIcon(inst.status)}).addTo(map)
-    m.bindPopup(`<div class="popup-name">${inst.name}</div><div class="popup-addr">${inst.address}</div><div class="status-badge status-${inst.status}">${inst.status.toUpperCase()}</div><button class="popup-open" onclick="selectInstallation(${inst.id})">View Details</button>`)
-    m.on('click',()=>selectInstallation(inst.id))
-    markers[inst.id]=m
-  })
-  if(valid.length>0&&Object.keys(markers).length>0){const g=L.featureGroup(Object.values(markers));map.fitBounds(g.getBounds().pad(0.2))}
+  Object.values(markers).forEach(function(m){map.removeLayer(m);}); markers={};
+  var valid=installations.filter(function(i){return i.lat&&i.lng;});
+  valid.forEach(function(inst){
+    var m=L.marker([inst.lat,inst.lng],{icon:mkIcon(inst.status)}).addTo(map);
+    m.bindPopup('<div class="popup-name">'+inst.name+'</div><div class="popup-addr">'+inst.address+'</div><button class="popup-open" onclick="selectInstallation('+inst.id+')">View Details</button>');
+    m.on('click',function(){selectInstallation(inst.id);});
+    markers[inst.id]=m;
+  });
+  if(valid.length>0){var g=L.featureGroup(Object.values(markers));map.fitBounds(g.getBounds().pad(0.2));}
 }
 
-function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCards()}
-function filterCards(){renderCards()}
+function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');renderCards();}
+function filterCards(){renderCards();}
 
-function selectInstallation(id){
-  selectedId=id;const inst=installations.find(i=>i.id===id);if(!inst)return
-  renderCards()
-  if(inst.lat&&inst.lng){map.flyTo([inst.lat,inst.lng],14,{duration:0.8});markers[id]?.openPopup()}
-  document.getElementById('detailName').textContent=inst.name
-  document.getElementById('detailBody').innerHTML=`
-    <div class="detail-section"><div class="detail-section-label">Status</div><span class="status-badge status-${inst.status}" style="font-size:0.75rem;padding:4px 12px">${inst.status.toUpperCase()}</span></div>
-    <div class="detail-section"><div class="detail-section-label">Location</div><div class="detail-field"><div class="detail-field-label">Address</div><div class="detail-field-value">${inst.address}</div></div></div>
-    <div class="detail-section"><div class="detail-section-label">Hardware</div><div class="detail-field"><div class="detail-field-label">Type</div><div class="detail-field-value">${inst.type||'—'}</div></div></div>
-    <div class="detail-section"><div class="detail-section-label">Team & Contact</div><div class="detail-field"><div class="detail-field-label">Assigned Team</div><div class="detail-field-value">${inst.team||'—'}</div></div><div class="detail-field"><div class="detail-field-label">Contact Person</div><div class="detail-field-value">${inst.contact||'—'}</div></div></div>
-    <div class="detail-section"><div class="detail-section-label">Dates</div><div class="detail-field"><div class="detail-field-label">Install Date</div><div class="detail-field-value">${inst.installDate||'—'}</div></div><div class="detail-field"><div class="detail-field-label">Next Maintenance</div><div class="detail-field-value">${inst.maintDate||'—'}</div></div></div>
-    ${inst.notes?`<div class="detail-section"><div class="detail-section-label">Notes / Documents</div><div class="detail-field"><div class="detail-field-value" style="white-space:pre-wrap">${inst.notes}</div></div></div>`:''}`
-  document.getElementById('detailEditBtn').onclick=()=>openModal(id)
-  document.getElementById('detailDeleteBtn').onclick=()=>deleteInstallation(id)
-  document.getElementById('detailPanel').classList.add('open')
+function selectInstallation(id) {
+  selectedId=id;var inst=installations.find(function(i){return i.id===id;});if(!inst)return;
+  renderCards();
+  if(inst.lat&&inst.lng){map.flyTo([inst.lat,inst.lng],14,{duration:0.8});if(markers[id])markers[id].openPopup();}
+  document.getElementById('detailName').textContent=inst.name;
+  document.getElementById('detailBody').innerHTML=
+    '<div class="detail-section"><div class="detail-section-label">Status</div><span class="status-badge status-'+inst.status+'" style="font-size:0.75rem;padding:4px 12px">'+inst.status.toUpperCase()+'</span></div>'+
+    '<div class="detail-section"><div class="detail-section-label">Location</div><div class="detail-field"><div class="detail-field-label">Address</div><div class="detail-field-value">'+inst.address+'</div></div></div>'+
+    '<div class="detail-section"><div class="detail-section-label">Hardware</div><div class="detail-field"><div class="detail-field-label">Type</div><div class="detail-field-value">'+(inst.type||'--')+'</div></div></div>'+
+    '<div class="detail-section"><div class="detail-section-label">Team</div><div class="detail-field"><div class="detail-field-label">Team</div><div class="detail-field-value">'+(inst.team||'--')+'</div></div><div class="detail-field"><div class="detail-field-label">Contact</div><div class="detail-field-value">'+(inst.contact||'--')+'</div></div></div>'+
+    '<div class="detail-section"><div class="detail-section-label">Dates</div><div class="detail-field"><div class="detail-field-label">Install Date</div><div class="detail-field-value">'+(inst.installDate||'--')+'</div></div><div class="detail-field"><div class="detail-field-label">Next Maintenance</div><div class="detail-field-value">'+(inst.maintDate||'--')+'</div></div></div>'+
+    (inst.notes?'<div class="detail-section"><div class="detail-section-label">Notes</div><div class="detail-field"><div class="detail-field-value" style="white-space:pre-wrap">'+inst.notes+'</div></div></div>':'');
+  document.getElementById('detailEditBtn').onclick=function(){openModal(id);};
+  document.getElementById('detailDeleteBtn').onclick=function(){deleteInstallation(id);};
+  document.getElementById('detailPanel').classList.add('open');
 }
 
-function closeDetail(){selectedId=null;document.getElementById('detailPanel').classList.remove('open');renderCards()}
+function closeDetail(){selectedId=null;document.getElementById('detailPanel').classList.remove('open');renderCards();}
 
-// ── GEOCODING ─────────────────────────────────────────────────
+// Geocoding
 async function geocodeAddress() {
-  const address=document.getElementById('f-address').value.trim()
-  if(!address){setGeocodeStatus('error','⚠ Please enter an address first.');return}
-  const btn=document.getElementById('geocodeBtn')
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>'
-  setGeocodeStatus('info','Looking up address...')
-  geocodedLat=null;geocodedLng=null;updateSaveBtn()
-  try {
-    const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`,{headers:{'Accept-Language':'en'}})
-    const data=await res.json()
-    if(!data.length){setGeocodeStatus('error','⚠ Address not found. Try being more specific.')}
-    else{geocodedLat=parseFloat(data[0].lat);geocodedLng=parseFloat(data[0].lon);setGeocodeStatus('success',`✓ Located: ${data[0].display_name.split(',').slice(0,3).join(',')}`)}
-  } catch(e){setGeocodeStatus('error','⚠ Could not connect. Check your connection.')}
-  btn.disabled=false;btn.innerHTML='📍 Locate';updateSaveBtn()
+  var addr=document.getElementById('f-address').value.trim();
+  if(!addr){setGeoStatus('error','Please enter an address first.');return;}
+  var btn=document.getElementById('geocodeBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
+  setGeoStatus('info','Looking up...');geocodedLat=null;geocodedLng=null;updateSaveBtn();
+  try{
+    var res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(addr),{headers:{'Accept-Language':'en'}});
+    var data=await res.json();
+    if(!data.length){setGeoStatus('error','Address not found. Try being more specific.');}
+    else{geocodedLat=parseFloat(data[0].lat);geocodedLng=parseFloat(data[0].lon);setGeoStatus('success','Located: '+data[0].display_name.split(',').slice(0,3).join(','));}
+  }catch(e){setGeoStatus('error','Connection error. Check your internet.');}
+  btn.disabled=false;btn.innerHTML='Locate';updateSaveBtn();
 }
 
-async function fetchSuggestions(query) {
-  if(query.length<3){hideSuggestions();return}
+async function fetchSuggestions(q) {
+  if(q.length<3){hideSuggestions();return;}
   try{
-    const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`,{headers:{'Accept-Language':'en'}})
-    const data=await res.json()
-    if(!data.length){hideSuggestions();return}
-    const list=document.getElementById('suggestionsList')
-    list.innerHTML=data.map(r=>`<div class="suggestion-item" onmousedown="selectSuggestion('${r.display_name.replace(/'/g,"\\'")}',${r.lat},${r.lon})">${r.display_name}</div>`).join('')
-    list.classList.add('open')
-  }catch(e){hideSuggestions()}
+    var res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&q='+encodeURIComponent(q),{headers:{'Accept-Language':'en'}});
+    var data=await res.json();
+    if(!data.length){hideSuggestions();return;}
+    var list=document.getElementById('suggestionsList');
+    list.innerHTML=data.map(function(r){return '<div class="suggestion-item" onmousedown="selectSuggestion(\''+r.display_name.replace(/'/g,"\\'")+"',"+r.lat+','+r.lon+')">'+r.display_name+'</div>';}).join('');
+    list.classList.add('open');
+  }catch(e){hideSuggestions();}
 }
 
 function selectSuggestion(name,lat,lon){
-  document.getElementById('f-address').value=name
-  geocodedLat=parseFloat(lat);geocodedLng=parseFloat(lon)
-  setGeocodeStatus('success',`✓ Located: ${name.split(',').slice(0,3).join(',')}`)
-  hideSuggestions();updateSaveBtn()
+  document.getElementById('f-address').value=name;
+  geocodedLat=parseFloat(lat);geocodedLng=parseFloat(lon);
+  setGeoStatus('success','Located: '+name.split(',').slice(0,3).join(','));
+  hideSuggestions();updateSaveBtn();
 }
-
-function hideSuggestions(){document.getElementById('suggestionsList').classList.remove('open')}
-function hideSuggestionsDelayed(){setTimeout(hideSuggestions,200)}
-
+function hideSuggestions(){document.getElementById('suggestionsList').classList.remove('open');}
+function hideSuggestionsDelayed(){setTimeout(hideSuggestions,200);}
 function onAddressInput(){
-  clearTimeout(suggestionTimeout)
-  geocodedLat=null;geocodedLng=null
-  setGeocodeStatus('info','Type an address and click Locate, or select a suggestion.')
-  updateSaveBtn()
-  const val=document.getElementById('f-address').value.trim()
-  if(val.length>=3) suggestionTimeout=setTimeout(()=>fetchSuggestions(val),350)
-  else hideSuggestions()
+  clearTimeout(suggestionTimeout);geocodedLat=null;geocodedLng=null;
+  setGeoStatus('info','Type an address and click Locate, or pick a suggestion.');updateSaveBtn();
+  var v=document.getElementById('f-address').value.trim();
+  if(v.length>=3)suggestionTimeout=setTimeout(function(){fetchSuggestions(v);},350);
+  else hideSuggestions();
+}
+function setGeoStatus(type,msg){var el=document.getElementById('geocodeStatus');el.className='geocode-status '+type;el.textContent=msg;}
+function updateSaveBtn(){document.getElementById('saveBtn').disabled=!(geocodedLat&&geocodedLng);}
+
+function openModal(id) {
+  editingId=id||null;
+  var inst=id?installations.find(function(i){return i.id===id;}):null;
+  document.getElementById('modalTitle').textContent=id?'Edit Installation':'New Installation';
+  document.getElementById('f-name').value=inst?inst.name:'';
+  document.getElementById('f-type').value=inst?inst.type:'';
+  document.getElementById('f-address').value=inst?inst.address:'';
+  document.getElementById('f-status').value=inst?inst.status:'active';
+  document.getElementById('f-team').value=inst?inst.team:'';
+  document.getElementById('f-contact').value=inst?inst.contact:'';
+  document.getElementById('f-install-date').value=inst?inst.installDate:'';
+  document.getElementById('f-maint-date').value=inst?inst.maintDate:'';
+  document.getElementById('f-notes').value=inst?inst.notes:'';
+  if(inst&&inst.lat&&inst.lng){geocodedLat=inst.lat;geocodedLng=inst.lng;setGeoStatus('success','Location loaded.');}
+  else{geocodedLat=null;geocodedLng=null;setGeoStatus('info','Type an address and click Locate.');}
+  updateSaveBtn();hideSuggestions();
+  document.getElementById('modalOverlay').classList.add('open');
 }
 
-function setGeocodeStatus(type,msg){const el=document.getElementById('geocodeStatus');el.className=`geocode-status ${type}`;el.textContent=msg}
-function updateSaveBtn(){document.getElementById('saveBtn').disabled=!(geocodedLat&&geocodedLng)}
-
-// ── MODAL ──────────────────────────────────────────────────────
-function openModal(id=null){
-  editingId=id;const inst=id?installations.find(i=>i.id===id):null
-  document.getElementById('modalTitle').textContent=id?'Edit Installation':'New Installation'
-  document.getElementById('f-name').value=inst?.name||''
-  document.getElementById('f-type').value=inst?.type||''
-  document.getElementById('f-address').value=inst?.address||''
-  document.getElementById('f-status').value=inst?.status||'active'
-  document.getElementById('f-team').value=inst?.team||''
-  document.getElementById('f-contact').value=inst?.contact||''
-  document.getElementById('f-install-date').value=inst?.installDate||''
-  document.getElementById('f-maint-date').value=inst?.maintDate||''
-  document.getElementById('f-notes').value=inst?.notes||''
-  if(inst?.lat&&inst?.lng){geocodedLat=inst.lat;geocodedLng=inst.lng;setGeocodeStatus('success','✓ Location loaded.')}
-  else{geocodedLat=null;geocodedLng=null;setGeocodeStatus('info','Type an address and click Locate, or select a suggestion.')}
-  updateSaveBtn();hideSuggestions()
-  document.getElementById('modalOverlay').classList.add('open')
-}
-
-function closeModal(){document.getElementById('modalOverlay').classList.remove('open');editingId=null;geocodedLat=null;geocodedLng=null;hideSuggestions()}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');editingId=null;geocodedLat=null;geocodedLng=null;hideSuggestions();}
 
 function saveInstallation(){
-  const name=document.getElementById('f-name').value.trim()
-  const address=document.getElementById('f-address').value.trim()
-  if(!name||!address){alert('Please fill in the Installation Name and Address.');return}
-  if(!geocodedLat||!geocodedLng){alert('Please click "Locate" or select an address suggestion.');return}
-  const data={name,type:document.getElementById('f-type').value.trim(),address,status:document.getElementById('f-status').value,team:document.getElementById('f-team').value.trim(),contact:document.getElementById('f-contact').value.trim(),installDate:document.getElementById('f-install-date').value,maintDate:document.getElementById('f-maint-date').value,lat:geocodedLat,lng:geocodedLng,notes:document.getElementById('f-notes').value.trim()}
-  const all=loadData()
-  if(editingId){const idx=all.findIndex(i=>i.id===editingId);all[idx]={...all[idx],...data};saveData(all);renderAll();selectInstallation(editingId)}
-  else{const newId=Date.now();all.push({id:newId,...data});saveData(all);renderAll();selectInstallation(newId)}
-  closeModal()
+  var name=document.getElementById('f-name').value.trim();
+  var addr=document.getElementById('f-address').value.trim();
+  if(!name||!addr){alert('Please fill in Name and Address.');return;}
+  if(!geocodedLat||!geocodedLng){alert('Please click Locate to place the address on the map.');return;}
+  var data={name:name,type:document.getElementById('f-type').value.trim(),address:addr,status:document.getElementById('f-status').value,team:document.getElementById('f-team').value.trim(),contact:document.getElementById('f-contact').value.trim(),installDate:document.getElementById('f-install-date').value,maintDate:document.getElementById('f-maint-date').value,lat:geocodedLat,lng:geocodedLng,notes:document.getElementById('f-notes').value.trim()};
+  var all=loadData();
+  if(editingId){var idx=all.findIndex(function(i){return i.id===editingId;});all[idx]=Object.assign({},all[idx],data);saveData(all);renderAll();selectInstallation(editingId);}
+  else{var nid=Date.now();all.push(Object.assign({id:nid},data));saveData(all);renderAll();selectInstallation(nid);}
+  closeModal();
 }
 
 function deleteInstallation(id){
-  if(!confirm('Delete this installation? This cannot be undone.'))return
-  saveData(loadData().filter(i=>i.id!==id));closeDetail();renderAll()
+  if(!confirm('Delete this installation?'))return;
+  saveData(loadData().filter(function(i){return i.id!==id;}));closeDetail();renderAll();
 }
 
-document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()})
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
 </script>
 </body>
 </html>
