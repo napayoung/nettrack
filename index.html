@@ -234,7 +234,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 2
     <div class="auth-subtitle">IT/Network Hardware Installation Portal</div>
     <div class="cred-warning" id="credWarning">
       <strong>Supabase credentials not set.</strong><br>
-      In your <code>index.html</code>, find the lines near the top of the script block and replace <code>YOUR_PROJECT_URL</code> and <code>YOUR_ANON_PUBLIC_KEY</code> with your real values from Supabase &rarr; Settings &rarr; API.
+      In your <code>index.html</code>, find the lines near the top of the script block and replace <code>https://vyitkfborjigmqsoscfg.supabase.co</code> and <code>YOUR_ANON_PUBLIC_KEY</code> with your real values from Supabase &rarr; Settings &rarr; API.
     </div>
 
     <!-- LOGIN -->
@@ -446,14 +446,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 2
 // ================================================================
 //  STEP 1: PASTE YOUR SUPABASE CREDENTIALS BELOW
 // ================================================================
-var SUPABASE_URL = 'https://YOUR_PROJECT_URL.supabase.co';
-var SUPABASE_KEY = 'YOUR_ANON_PUBLIC_KEY';
+var SUPABASE_URL = 'https://https://vyitkfborjigmqsoscfg.supabase.co.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_ERYvEm4sGTzMZbAlYIUf6g_aAFYqQFB';
 // ================================================================
 
 var _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Show warning if credentials not set
-if (SUPABASE_URL.indexOf('YOUR_PROJECT_URL') !== -1 || SUPABASE_KEY.indexOf('YOUR_ANON') !== -1) {
+if (SUPABASE_URL.indexOf('https://vyitkfborjigmqsoscfg.supabase.co') !== -1 || SUPABASE_KEY.indexOf('YOUR_ANON') !== -1) {
   document.getElementById('credWarning').style.display = 'block';
 }
 
@@ -492,7 +492,7 @@ async function doLogin() {
 
   if (!email || !pw) { showErr('loginError', 'Please enter your email and password.'); return; }
 
-  if (SUPABASE_URL.indexOf('YOUR_PROJECT_URL') !== -1) {
+  if (SUPABASE_URL.indexOf('https://vyitkfborjigmqsoscfg.supabase.co') !== -1) {
     showErr('loginError', 'Supabase credentials are not configured yet. See the yellow box above.');
     return;
   }
