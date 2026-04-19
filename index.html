@@ -562,6 +562,9 @@ header{
       <!-- SECTION: Install Details -->
       <div class="form-section-label">🔧 Install Details</div>
       <div class="form-row">
+        <div class="form-group"><label class="form-label">Installer Name</label><input class="form-input" id="f-installer-name" placeholder="Technician name" autocomplete="off"></div>
+      </div>
+      <div class="form-row">
         <div class="form-group"><label class="form-label">Install Date</label><input class="form-input" id="f-install-date" type="date"></div>
         <div class="form-group"><label class="form-label">Port Date</label><input class="form-input" id="f-port-date" type="date"></div>
       </div>
@@ -626,8 +629,8 @@ header{
 // ================================================================
 //  PASTE YOUR SUPABASE CREDENTIALS HERE
 // ================================================================
-var SUPABASE_URL = 'https://vyitkfborjigmqsoscfg.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_ERYvEm4sGTzMZbAlYIUf6g_aAFYqQFB';
+var SUPABASE_URL = 'https://YOUR_PROJECT_URL.supabase.co';
+var SUPABASE_KEY = 'YOUR_ANON_PUBLIC_KEY';
 // ================================================================
 
 var _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -700,15 +703,17 @@ _sb.auth.onAuthStateChange((event,session)=>{
   else if(event==='SIGNED_OUT'){document.getElementById('appShell').classList.remove('visible');document.getElementById('authScreen').classList.remove('hidden');}
 });
 
-function launchApp(user){
+async function launchApp(user){
   document.getElementById('authScreen').classList.add('hidden');
   document.getElementById('appShell').classList.add('visible');
   var em=user.email||'';
   document.getElementById('userAvatar').textContent=em.slice(0,2).toUpperCase();
   document.getElementById('sheetEmail').textContent=em;
-  // Show desktop tabs on wider screens
   if(window.innerWidth>=640)document.getElementById('desktopTabs').style.display='flex';
-  setTimeout(()=>{map.invalidateSize();renderAll();},120);
+  setTimeout(()=>map.invalidateSize(),120);
+  await loadData();
+  renderAll();
+  subscribeToChanges();
 }
 
 // User sheet
@@ -719,19 +724,101 @@ function closeUserSheet(e){if(!e||e.target===document.getElementById('userSheetO
 document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
-// ── DATA ──────────────────────────────────────────────────────
-var STORAGE_KEY='nettrack_v2';
-var SAMPLE=[
-  {id:1,name:'Acme Corp HQ',type:'Cisco Catalyst 9300',address:'350 Fifth Ave, New York, NY',status:'active',phoneCount:'48',companyOwner:'John Acme',vzwRep:'Dave Williams',spocName:'Marcus Johnson',spocPhone:'(212) 555-0101',spocEmail:'marcus@acme.com',installDate:'2025-03-15',portDate:'2025-03-20',overheadPage:'yes',pageAll:'no',leadId:'LID-001',username:'acme_admin',password:'pass1234',lat:40.7484,lng:-73.9856,notes:'Primary core switch for HQ building.'},
-  {id:2,name:'Brooklyn Logistics',type:'Juniper MX204',address:'1 MetroTech Center, Brooklyn, NY',status:'active',phoneCount:'30',companyOwner:'Sara Park',vzwRep:'Lisa Chen',spocName:'Priya Patel',spocPhone:'(718) 555-0202',spocEmail:'priya@bklogistics.com',installDate:'2025-04-22',portDate:'2025-04-25',overheadPage:'no',pageAll:'no',leadId:'LID-002',username:'bklog_user',password:'bklog456',lat:40.6926,lng:-73.9872,notes:'Brooklyn office egress.'},
-  {id:3,name:'Jersey IT Solutions',type:'Aruba AP-535',address:'30 Hudson St, Jersey City, NJ',status:'pending',phoneCount:'12',companyOwner:'Tom Ross',vzwRep:'Dave Williams',spocName:'Tyler Ross',spocPhone:'(201) 555-0303',spocEmail:'tyler@jerseyit.com',installDate:'2025-05-10',portDate:'',overheadPage:'yes',pageAll:'yes',leadId:'LID-003',username:'jerseyit',password:'jit789',lat:40.7178,lng:-74.0431,notes:'Awaiting survey approval.'},
-  {id:4,name:'Bronx Security Co',type:'Palo Alto PA-3260',address:'851 Grand Concourse, Bronx, NY',status:'complete',phoneCount:'20',companyOwner:'Ada Obi',vzwRep:'Lisa Chen',spocName:'Adaeze Obi',spocPhone:'(718) 555-0404',spocEmail:'ada@bronxsec.com',installDate:'2025-02-05',portDate:'2025-02-07',overheadPage:'no',pageAll:'no',leadId:'LID-004',username:'bronxsec',password:'bsec321',lat:40.8448,lng:-73.9285,notes:'Firmware upgrade complete.'},
-  {id:5,name:'West Coast Networks',type:'Arista 7280R',address:'633 W 5th St, Los Angeles, CA',status:'active',phoneCount:'60',companyOwner:'Sofia Reyes',vzwRep:'Mark Torres',spocName:'Sofia Reyes',spocPhone:'(213) 555-0505',spocEmail:'sofia@wcnets.com',installDate:'2025-04-10',portDate:'2025-04-15',overheadPage:'yes',pageAll:'yes',leadId:'LID-005',username:'wcnets_admin',password:'wcn555',lat:34.0522,lng:-118.2437,notes:'West coast backbone node.'}
-];
-function loadData(){var s=localStorage.getItem(STORAGE_KEY);if(s)try{return JSON.parse(s);}catch(e){}localStorage.setItem(STORAGE_KEY,JSON.stringify(SAMPLE));return SAMPLE;}
-function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}
+// ── DATA (Supabase — shared across all users) ─────────────────
+var installations = [];
 
-var installations=loadData();
+function dbToApp(row) {
+  return {
+    id:            row.id,
+    name:          row.name || '',
+    type:          row.type || '',
+    address:       row.address || '',
+    phoneCount:    row.phone_count || '',
+    companyOwner:  row.company_owner || '',
+    vzwRep:        row.vzw_rep || '',
+    spocName:      row.spoc_name || '',
+    spocPhone:     row.spoc_phone || '',
+    spocEmail:     row.spoc_email || '',
+    installerName: row.installer_name || '',
+    installDate:   row.install_date || '',
+    portDate:      row.port_date || '',
+    overheadPage:  row.overhead_page || '',
+    pageAll:       row.page_all || '',
+    leadId:        row.lead_id || '',
+    username:      row.username || '',
+    password:      row.password || '',
+    status:        row.status || 'pending',
+    notes:         row.notes || '',
+    lat:           row.lat,
+    lng:           row.lng,
+  };
+}
+
+function appToDb(data) {
+  return {
+    name:           data.name,
+    type:           data.type,
+    address:        data.address,
+    phone_count:    data.phoneCount,
+    company_owner:  data.companyOwner,
+    vzw_rep:        data.vzwRep,
+    spoc_name:      data.spocName,
+    spoc_phone:     data.spocPhone,
+    spoc_email:     data.spocEmail,
+    installer_name: data.installerName,
+    install_date:   data.installDate || null,
+    port_date:      data.portDate || null,
+    overhead_page:  data.overheadPage,
+    page_all:       data.pageAll,
+    lead_id:        data.leadId,
+    username:       data.username,
+    password:       data.password,
+    status:         data.status,
+    notes:          data.notes,
+    lat:            data.lat,
+    lng:            data.lng,
+  };
+}
+
+function setListLoading(on) {
+  if (on) document.getElementById('installationsList').innerHTML =
+    '<div class="empty-state"><div class="empty-state-icon" style="display:inline-block;animation:spin 1s linear infinite">⟳</div><br>Loading...</div>';
+}
+
+async function loadData() {
+  setListLoading(true);
+  var result = await _sb.from('installations').select('*').order('created_at', { ascending: false });
+  if (result.error) { console.error('Load error:', result.error.message); installations = []; }
+  else installations = result.data.map(dbToApp);
+}
+
+async function insertInstallation(data) {
+  var result = await _sb.from('installations').insert(appToDb(data)).select().single();
+  if (result.error) { alert('Save error: ' + result.error.message); return null; }
+  return dbToApp(result.data);
+}
+
+async function updateInstallation(id, data) {
+  var result = await _sb.from('installations').update(appToDb(data)).eq('id', id);
+  if (result.error) { alert('Update error: ' + result.error.message); return false; }
+  return true;
+}
+
+async function deleteInstallationDb(id) {
+  var result = await _sb.from('installations').delete().eq('id', id);
+  if (result.error) { alert('Delete error: ' + result.error.message); return false; }
+  return true;
+}
+
+// Real-time: push changes to all logged-in users instantly
+function subscribeToChanges() {
+  _sb.channel('installations-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'installations' }, async () => {
+      await loadData();
+      renderAll();
+    })
+    .subscribe();
+}
 var currentFilter='all';
 var selectedId=null;
 var editingId=null;
@@ -812,7 +899,6 @@ function renderAlerts(){
 
 // ── RENDER ────────────────────────────────────────────────────
 function renderAll(){
-  installations=loadData();
   renderCards();renderMarkers();
   if(currentTab==='national'&&natMapInited){renderNatMarkers();renderNationalStats();renderAlerts();}
   if(currentTab==='calendar')renderCalendar();
@@ -904,6 +990,7 @@ function openDetail(id){
     '</div>'+
 
     '<div class="detail-section"><div class="detail-section-label">🔧 Install Details</div>'+
+    '<div class="detail-field"><div class="detail-field-label">Installer Name</div><div class="detail-field-value">'+(inst.installerName||'—')+'</div></div>'+
     '<div class="detail-field"><div class="detail-field-label">Install Date</div><div class="detail-field-value">'+(inst.installDate||'—')+'</div></div>'+
     '<div class="detail-field"><div class="detail-field-label">Port Date</div><div class="detail-field-value">'+(inst.portDate||'—')+'</div></div>'+
     '<div class="detail-field"><div class="detail-field-label">Installer Name</div><div class="detail-field-value">'+(inst.installerName||'—')+'</div></div>'+
@@ -1075,7 +1162,7 @@ function closeModal(){
 }
 function handleModalOverlayClick(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
 
-function saveInstallation(){
+async function saveInstallation(){
   var name=document.getElementById('f-name').value.trim();
   var addr=document.getElementById('f-address').value.trim();
   if(!name||!addr){alert('Please fill in Company Name and Address.');return;}
@@ -1102,13 +1189,22 @@ function saveInstallation(){
     notes:document.getElementById('f-notes').value.trim(),
     lat:geocodedLat,lng:geocodedLng
   };
-  var all=loadData();
-  if(editingId){var idx=all.findIndex(i=>i.id===editingId);all[idx]=Object.assign({},all[idx],data);saveData(all);renderAll();closeModal();openDetail(editingId);}
-  else{var nid=Date.now();all.push(Object.assign({id:nid},data));saveData(all);renderAll();closeModal();}
+  document.getElementById('saveBtn').disabled=true;
+  document.getElementById('saveBtn').textContent='Saving...';
+  if(editingId){
+    var ok=await updateInstallation(editingId,data);
+    if(ok){closeModal();await loadData();renderAll();openDetail(editingId);}
+  } else {
+    var newInst=await insertInstallation(data);
+    if(newInst){closeModal();await loadData();renderAll();}
+  }
+  document.getElementById('saveBtn').disabled=false;
+  document.getElementById('saveBtn').textContent='Save';
 }
-function deleteInstallation(id){
+async function deleteInstallation(id){
   if(!confirm('Delete this installation?'))return;
-  saveData(loadData().filter(i=>i.id!==id));closeDetail();renderAll();
+  var ok=await deleteInstallationDb(id);
+  if(ok){closeDetail();await loadData();renderAll();}
 }
 
 // Resize handler for tab switching
