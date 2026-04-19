@@ -270,6 +270,8 @@ header{
 .btn-save{flex:2;background:var(--accent);border:none;color:var(--bg);padding:12px;border-radius:8px;font-family:var(--font-head);font-weight:700;font-size:0.85rem;cursor:pointer;min-height:48px;}
 .btn-save:disabled{opacity:0.5;cursor:not-allowed;}
 .btn-save:active,.btn-cancel:active{opacity:0.8;}
+.form-section-label{font-family:var(--font-head);font-weight:700;font-size:0.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.form-section-label:first-child{margin-top:0;}
 .address-row{position:relative;}
 .geocode-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--accent);color:var(--bg);border:none;border-radius:6px;padding:6px 10px;font-family:var(--font-head);font-weight:700;font-size:0.65rem;cursor:pointer;white-space:nowrap;}
 .geocode-btn:disabled{opacity:0.5;}
@@ -520,14 +522,25 @@ header{
       <button class="btn-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
+
+      <!-- SECTION: Company Info -->
+      <div class="form-section-label">🏢 Company Info</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Name *</label><input class="form-input" id="f-name" placeholder="Router Node 4B" autocomplete="off"></div>
+        <div class="form-group"><label class="form-label">Company Name *</label><input class="form-input" id="f-name" placeholder="Acme Corp" autocomplete="off"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Hardware Type</label><input class="form-input" id="f-type" placeholder="e.g. Cisco Router" autocomplete="off"></div>
+        <div class="form-group"><label class="form-label">Phone Count</label><input class="form-input" id="f-phone-count" placeholder="e.g. 24" type="number" min="0" autocomplete="off"></div>
       </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Company Owner</label><input class="form-input" id="f-company-owner" placeholder="Owner name" autocomplete="off"></div>
+        <div class="form-group"><label class="form-label">VZW Rep</label><input class="form-input" id="f-vzw-rep" placeholder="Rep name" autocomplete="off"></div>
+      </div>
+
+      <!-- SECTION: Location -->
+      <div class="form-section-label">📍 Location</div>
       <div class="form-group" style="margin-bottom:12px">
-        <label class="form-label">Address *</label>
+        <label class="form-label">Company Address *</label>
         <div class="address-row">
           <input class="form-input" id="f-address" placeholder="Start typing an address..." autocomplete="off" oninput="onAddressInput()" onblur="hideSuggestionsDelayed()">
           <button class="geocode-btn" id="geocodeBtn" onclick="geocodeAddress()" type="button">📍</button>
@@ -535,25 +548,71 @@ header{
         </div>
         <div class="geocode-status info" id="geocodeStatus">Type address and tap 📍, or pick a suggestion.</div>
       </div>
+
+      <!-- SECTION: SPOC -->
+      <div class="form-section-label">👤 SPOC (Single Point of Contact)</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Status</label>
-          <select class="form-select" id="f-status">
-            <option value="active">Active</option><option value="pending">Pending</option>
-            <option value="complete">Complete</option><option value="offline">Offline</option>
-            <option value="maintenance">Maintenance</option>
+        <div class="form-group"><label class="form-label">SPOC Name</label><input class="form-input" id="f-spoc-name" placeholder="Jane Smith" autocomplete="off"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">SPOC Phone</label><input class="form-input" id="f-spoc-phone" placeholder="(555) 000-0000" type="tel" autocomplete="off"></div>
+        <div class="form-group"><label class="form-label">SPOC Email</label><input class="form-input" id="f-spoc-email" placeholder="spoc@company.com" type="email" autocomplete="off" inputmode="email"></div>
+      </div>
+
+      <!-- SECTION: Install Details -->
+      <div class="form-section-label">🔧 Install Details</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Install Date</label><input class="form-input" id="f-install-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Port Date</label><input class="form-input" id="f-port-date" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Installer Name</label><input class="form-input" id="f-installer-name" placeholder="e.g. Mike Torres" autocomplete="off"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Overhead Page</label>
+          <select class="form-select" id="f-overhead-page">
+            <option value="">— Select —</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
           </select>
         </div>
-        <div class="form-group"><label class="form-label">Team</label><input class="form-input" id="f-team" placeholder="Ops Team A" autocomplete="off"></div>
+        <div class="form-group"><label class="form-label">Page All</label>
+          <select class="form-select" id="f-page-all">
+            <option value="">— Select —</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SECTION: Account -->
+      <div class="form-section-label">🔐 Account</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Lead ID</label><input class="form-input" id="f-lead-id" placeholder="Lead identifier" autocomplete="off"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Contact</label><input class="form-input" id="f-contact" placeholder="Jane Smith" autocomplete="off"></div>
-        <div class="form-group"><label class="form-label">Install Date</label><input class="form-input" id="f-install-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="f-username" placeholder="Username" autocomplete="off"></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="f-password" placeholder="Password" autocomplete="off"></div>
       </div>
+
+      <!-- SECTION: Status -->
+      <div class="form-section-label">📊 Status</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Next Maintenance</label><input class="form-input" id="f-maint-date" type="date"></div>
-        <div class="form-group"></div>
+        <div class="form-group"><label class="form-label">Status *</label>
+          <select class="form-select" id="f-status">
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="complete">Complete</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group" style="margin-bottom:4px"><label class="form-label">Notes</label><textarea class="form-textarea" id="f-notes" placeholder="Additional notes..."></textarea></div>
+
+      <!-- SECTION: Notes -->
+      <div class="form-section-label">📝 Notes</div>
+      <div class="form-group" style="margin-bottom:4px">
+        <textarea class="form-textarea" id="f-notes" placeholder="Additional notes..."></textarea>
+      </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -663,15 +722,11 @@ document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key===
 // ── DATA ──────────────────────────────────────────────────────
 var STORAGE_KEY='nettrack_v2';
 var SAMPLE=[
-  {id:1,name:'Core Switch HQ',type:'Cisco Catalyst 9300',address:'350 Fifth Ave, New York, NY',status:'active',team:'Network Ops A',contact:'Marcus Johnson',installDate:'2025-03-15',maintDate:'2025-06-01',lat:40.7484,lng:-73.9856,notes:'Primary core switch.'},
-  {id:2,name:'Edge Router Brooklyn',type:'Juniper MX204',address:'1 MetroTech Center, Brooklyn, NY',status:'active',team:'Network Ops B',contact:'Priya Patel',installDate:'2025-04-22',maintDate:'2025-07-22',lat:40.6926,lng:-73.9872,notes:'Brooklyn office egress.'},
-  {id:3,name:'AP Cluster Jersey',type:'Aruba AP-535',address:'30 Hudson St, Jersey City, NJ',status:'pending',team:'Field Install',contact:'Tyler Ross',installDate:'2025-05-10',maintDate:'2025-08-15',lat:40.7178,lng:-74.0431,notes:'Awaiting survey approval.'},
-  {id:4,name:'Firewall Bronx',type:'Palo Alto PA-3260',address:'851 Grand Concourse, Bronx, NY',status:'complete',team:'Security Ops',contact:'Adaeze Obi',installDate:'2025-02-05',maintDate:'2025-05-10',lat:40.8448,lng:-73.9285,notes:'Firmware upgrade complete.'},
-  {id:5,name:'West Coast Hub LA',type:'Arista 7280R',address:'633 W 5th St, Los Angeles, CA',status:'active',team:'West Coast Ops',contact:'Sofia Reyes',installDate:'2025-04-10',maintDate:'2025-09-01',lat:34.0522,lng:-118.2437,notes:'West coast backbone.'},
-  {id:6,name:'Data Center Chicago',type:'Cisco Nexus 9000',address:'311 W Monroe St, Chicago, IL',status:'active',team:'Midwest Ops',contact:'James Park',installDate:'2025-03-20',maintDate:'2025-08-20',lat:41.8819,lng:-87.6278,notes:'Midwest data center.'},
-  {id:7,name:'Gateway Dallas',type:'Juniper PTX5000',address:'1500 Marilla St, Dallas, TX',status:'pending',team:'South Ops',contact:'Rita Vasquez',installDate:'2025-05-25',maintDate:'2025-10-01',lat:32.7767,lng:-96.7970,notes:'Awaiting rack install.'},
-  {id:8,name:'Relay Seattle',type:'Cisco ASR 9000',address:'401 5th Ave, Seattle, WA',status:'active',team:'West Coast Ops',contact:'Lena Brooks',installDate:'2025-04-05',maintDate:'2025-11-01',lat:47.6062,lng:-122.3321,notes:'Pacific NW relay.'},
-  {id:9,name:'Edge Node Miami',type:'Nokia 7750',address:'444 Brickell Ave, Miami, FL',status:'complete',team:'South Ops',contact:'Carlos Diaz',installDate:'2025-02-15',maintDate:'2025-05-01',lat:25.7617,lng:-80.1918,notes:'Repair completed.'}
+  {id:1,name:'Acme Corp HQ',type:'Cisco Catalyst 9300',address:'350 Fifth Ave, New York, NY',status:'active',phoneCount:'48',companyOwner:'John Acme',vzwRep:'Dave Williams',spocName:'Marcus Johnson',spocPhone:'(212) 555-0101',spocEmail:'marcus@acme.com',installDate:'2025-03-15',portDate:'2025-03-20',overheadPage:'yes',pageAll:'no',leadId:'LID-001',username:'acme_admin',password:'pass1234',lat:40.7484,lng:-73.9856,notes:'Primary core switch for HQ building.'},
+  {id:2,name:'Brooklyn Logistics',type:'Juniper MX204',address:'1 MetroTech Center, Brooklyn, NY',status:'active',phoneCount:'30',companyOwner:'Sara Park',vzwRep:'Lisa Chen',spocName:'Priya Patel',spocPhone:'(718) 555-0202',spocEmail:'priya@bklogistics.com',installDate:'2025-04-22',portDate:'2025-04-25',overheadPage:'no',pageAll:'no',leadId:'LID-002',username:'bklog_user',password:'bklog456',lat:40.6926,lng:-73.9872,notes:'Brooklyn office egress.'},
+  {id:3,name:'Jersey IT Solutions',type:'Aruba AP-535',address:'30 Hudson St, Jersey City, NJ',status:'pending',phoneCount:'12',companyOwner:'Tom Ross',vzwRep:'Dave Williams',spocName:'Tyler Ross',spocPhone:'(201) 555-0303',spocEmail:'tyler@jerseyit.com',installDate:'2025-05-10',portDate:'',overheadPage:'yes',pageAll:'yes',leadId:'LID-003',username:'jerseyit',password:'jit789',lat:40.7178,lng:-74.0431,notes:'Awaiting survey approval.'},
+  {id:4,name:'Bronx Security Co',type:'Palo Alto PA-3260',address:'851 Grand Concourse, Bronx, NY',status:'complete',phoneCount:'20',companyOwner:'Ada Obi',vzwRep:'Lisa Chen',spocName:'Adaeze Obi',spocPhone:'(718) 555-0404',spocEmail:'ada@bronxsec.com',installDate:'2025-02-05',portDate:'2025-02-07',overheadPage:'no',pageAll:'no',leadId:'LID-004',username:'bronxsec',password:'bsec321',lat:40.8448,lng:-73.9285,notes:'Firmware upgrade complete.'},
+  {id:5,name:'West Coast Networks',type:'Arista 7280R',address:'633 W 5th St, Los Angeles, CA',status:'active',phoneCount:'60',companyOwner:'Sofia Reyes',vzwRep:'Mark Torres',spocName:'Sofia Reyes',spocPhone:'(213) 555-0505',spocEmail:'sofia@wcnets.com',installDate:'2025-04-10',portDate:'2025-04-15',overheadPage:'yes',pageAll:'yes',leadId:'LID-005',username:'wcnets_admin',password:'wcn555',lat:34.0522,lng:-118.2437,notes:'West coast backbone node.'}
 ];
 function loadData(){var s=localStorage.getItem(STORAGE_KEY);if(s)try{return JSON.parse(s);}catch(e){}localStorage.setItem(STORAGE_KEY,JSON.stringify(SAMPLE));return SAMPLE;}
 function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}
@@ -781,7 +836,7 @@ function renderCards(){
           <span class="status-badge status-${i.status}">${i.status}</span>
         </div>
         <div class="card-addr">📍 ${i.address}</div>
-        <div class="card-meta">${i.team||''}${i.installDate?' · '+i.installDate:''}</div>
+        <div class="card-meta">${i.spocName||''}${i.installDate?' · '+i.installDate:''}</div>
       </div>
       <span class="card-chevron">›</span>
     </div>`).join('');
@@ -829,11 +884,40 @@ function openDetail(id){
 
   document.getElementById('detailBody').innerHTML=
     '<div class="detail-section"><div class="detail-section-label">Status</div><span class="status-badge status-'+inst.status+'" style="font-size:0.75rem;padding:4px 12px">'+inst.status.toUpperCase()+'</span></div>'+
-    '<div class="detail-section"><div class="detail-section-label">Location</div><div class="detail-field"><div class="detail-field-label">Address</div><div class="detail-field-value">'+inst.address+'</div></div></div>'+
-    '<div class="detail-section"><div class="detail-section-label">Hardware</div><div class="detail-field"><div class="detail-field-label">Type</div><div class="detail-field-value">'+(inst.type||'—')+'</div></div></div>'+
-    '<div class="detail-section"><div class="detail-section-label">Team & Contact</div><div class="detail-field"><div class="detail-field-label">Team</div><div class="detail-field-value">'+(inst.team||'—')+'</div></div><div class="detail-field"><div class="detail-field-label">Contact</div><div class="detail-field-value">'+(inst.contact||'—')+'</div></div></div>'+
-    '<div class="detail-section"><div class="detail-section-label">Dates</div><div class="detail-field"><div class="detail-field-label">Install Date</div><div class="detail-field-value">'+(inst.installDate||'—')+'</div></div><div class="detail-field"><div class="detail-field-label">Next Maintenance</div><div class="detail-field-value">'+(inst.maintDate||'—')+'</div></div></div>'+
-    (inst.notes?'<div class="detail-section"><div class="detail-section-label">Notes</div><div class="detail-field"><div class="detail-field-value" style="white-space:pre-wrap">'+inst.notes+'</div></div></div>':'');
+
+    '<div class="detail-section"><div class="detail-section-label">🏢 Company Info</div>'+
+    '<div class="detail-field"><div class="detail-field-label">Company Name</div><div class="detail-field-value">'+inst.name+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Hardware Type</div><div class="detail-field-value">'+(inst.type||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Phone Count</div><div class="detail-field-value">'+(inst.phoneCount||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Company Owner</div><div class="detail-field-value">'+(inst.companyOwner||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">VZW Rep</div><div class="detail-field-value">'+(inst.vzwRep||'—')+'</div></div>'+
+    '</div>'+
+
+    '<div class="detail-section"><div class="detail-section-label">📍 Location</div>'+
+    '<div class="detail-field"><div class="detail-field-label">Address</div><div class="detail-field-value">'+inst.address+'</div></div>'+
+    '</div>'+
+
+    '<div class="detail-section"><div class="detail-section-label">👤 SPOC</div>'+
+    '<div class="detail-field"><div class="detail-field-label">Name</div><div class="detail-field-value">'+(inst.spocName||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Phone</div><div class="detail-field-value">'+(inst.spocPhone?'<a href="tel:'+inst.spocPhone+'" style="color:var(--accent);text-decoration:none;">'+inst.spocPhone+'</a>':'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Email</div><div class="detail-field-value">'+(inst.spocEmail?'<a href="mailto:'+inst.spocEmail+'" style="color:var(--accent);text-decoration:none;">'+inst.spocEmail+'</a>':'—')+'</div></div>'+
+    '</div>'+
+
+    '<div class="detail-section"><div class="detail-section-label">🔧 Install Details</div>'+
+    '<div class="detail-field"><div class="detail-field-label">Install Date</div><div class="detail-field-value">'+(inst.installDate||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Port Date</div><div class="detail-field-value">'+(inst.portDate||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Installer Name</div><div class="detail-field-value">'+(inst.installerName||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Overhead Page</div><div class="detail-field-value">'+(inst.overheadPage?inst.overheadPage.toUpperCase():'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Page All</div><div class="detail-field-value">'+(inst.pageAll?inst.pageAll.toUpperCase():'—')+'</div></div>'+
+    '</div>'+
+
+    '<div class="detail-section"><div class="detail-section-label">🔐 Account</div>'+
+    '<div class="detail-field"><div class="detail-field-label">Lead ID</div><div class="detail-field-value">'+(inst.leadId||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Username</div><div class="detail-field-value">'+(inst.username||'—')+'</div></div>'+
+    '<div class="detail-field"><div class="detail-field-label">Password</div><div class="detail-field-value">'+(inst.password||'—')+'</div></div>'+
+    '</div>'+
+
+    (inst.notes?'<div class="detail-section"><div class="detail-section-label">📝 Notes</div><div class="detail-field"><div class="detail-field-value" style="white-space:pre-wrap">'+inst.notes+'</div></div></div>':'');
 }
 
 function closeDetail(){
@@ -853,7 +937,7 @@ function calToday(){var n=new Date();calYear=n.getFullYear();calMonth=n.getMonth
 function buildEventMap(){
   var m={};
   installations.forEach(inst=>{
-    [['installDate','install'],['maintDate','maint']].forEach(([field,type])=>{
+    [['installDate','install'],['portDate','maint']].forEach(([field,type])=>{
       if(inst[field]){if(!m[inst[field]])m[inst[field]]=[];m[inst[field]].push({inst,type});}
     });
   });
@@ -884,7 +968,7 @@ function renderCalendar(){
     html+='<div class="cal-day-num">'+d.getDate()+'</div>';
     evs.slice(0,2).forEach(ev=>{
       var pc=isPast?' ev-past':'';
-      html+='<div class="cal-event '+(ev.type==='install'?'ev-install':'ev-maint')+pc+'">'+(ev.type==='install'?'📡':'🔧')+' '+ev.inst.name+'</div>';
+      html+='<div class="cal-event '+(ev.type==='install'?'ev-install':'ev-maint')+pc+'">'+(ev.type==='install'?'📡':'🔌')+' '+ev.inst.name+'</div>';
     });
     if(evs.length>2)html+='<div class="cal-more">+'+( evs.length-2)+'</div>';
     html+='</div>';
@@ -907,7 +991,7 @@ function calDayTap(key,e){
     return '<div class="cal-sheet-item" onclick="goToInstall('+ev.inst.id+');closeCalSheet()">'+
       '<div class="cal-sheet-item-name">'+ev.inst.name+'</div>'+
       '<div class="cal-sheet-item-date">'+(past?'Past · ':'')+ev.inst.address+'</div>'+
-      '<div class="cal-sheet-item-type '+tc+'">'+(ev.type==='install'?'Install Date':'Maintenance Date')+'</div>'+
+      '<div class="cal-sheet-item-type '+tc+'">'+(ev.type==='install'?'Install Date':'Port Date')+'</div>'+
       '</div>';
   }).join('');
   document.getElementById('calSheetOverlay').classList.add('open');
@@ -963,15 +1047,25 @@ function openModal(id){
   editingId=id||null;
   var inst=id?installations.find(i=>i.id===id):null;
   document.getElementById('modalTitle').textContent=id?'Edit Installation':'New Installation';
-  ['name','type','address','team','contact','notes'].forEach(f=>document.getElementById('f-'+f).value=inst?inst[f]||'':'');
-  document.getElementById('f-status').value=inst?inst.status:'active';
+  // Simple text/email/tel/number fields
+  var textFields=['name','type','address','phone-count','company-owner','vzw-rep',
+    'spoc-name','spoc-phone','spoc-email','lead-id','username','password','installer-name','notes'];
+  textFields.forEach(f=>{
+    var el=document.getElementById('f-'+f);
+    if(el)el.value=inst?inst[f.replace(/-([a-z])/g,(m,c)=>c.toUpperCase())]||'':'';
+  });
+  // Date fields
   document.getElementById('f-install-date').value=inst?inst.installDate||'':'';
-  document.getElementById('f-maint-date').value=inst?inst.maintDate||'':'';
+  document.getElementById('f-port-date').value=inst?inst.portDate||'':'';
+  // Selects
+  document.getElementById('f-status').value=inst?inst.status:'pending';
+  document.getElementById('f-overhead-page').value=inst?inst.overheadPage||'':'';
+  document.getElementById('f-page-all').value=inst?inst.pageAll||'':'';
+  // Geo
   if(inst&&inst.lat&&inst.lng){geocodedLat=inst.lat;geocodedLng=inst.lng;setGeoStatus('success','✓ Location loaded.');}
   else{geocodedLat=null;geocodedLng=null;setGeoStatus('info','Type address and tap 📍.');}
   updateSaveBtn();hideSuggestions();
   document.getElementById('modalOverlay').style.display='flex';
-  // Delay to trigger animation
   requestAnimationFrame(()=>document.getElementById('modalOverlay').classList.add('open'));
 }
 function closeModal(){
@@ -984,13 +1078,30 @@ function handleModalOverlayClick(e){if(e.target===document.getElementById('modal
 function saveInstallation(){
   var name=document.getElementById('f-name').value.trim();
   var addr=document.getElementById('f-address').value.trim();
-  if(!name||!addr){alert('Please fill in Name and Address.');return;}
+  if(!name||!addr){alert('Please fill in Company Name and Address.');return;}
   if(!geocodedLat||!geocodedLng){alert('Please tap 📍 to locate the address on the map.');return;}
-  var data={name,type:document.getElementById('f-type').value.trim(),address:addr,
-    status:document.getElementById('f-status').value,team:document.getElementById('f-team').value.trim(),
-    contact:document.getElementById('f-contact').value.trim(),installDate:document.getElementById('f-install-date').value,
-    maintDate:document.getElementById('f-maint-date').value,lat:geocodedLat,lng:geocodedLng,
-    notes:document.getElementById('f-notes').value.trim()};
+  var data={
+    name,
+    type:document.getElementById('f-type').value.trim(),
+    address:addr,
+    phoneCount:document.getElementById('f-phone-count').value.trim(),
+    companyOwner:document.getElementById('f-company-owner').value.trim(),
+    vzwRep:document.getElementById('f-vzw-rep').value.trim(),
+    spocName:document.getElementById('f-spoc-name').value.trim(),
+    spocPhone:document.getElementById('f-spoc-phone').value.trim(),
+    spocEmail:document.getElementById('f-spoc-email').value.trim(),
+    installDate:document.getElementById('f-install-date').value,
+    portDate:document.getElementById('f-port-date').value,
+    installerName:document.getElementById('f-installer-name').value.trim(),
+    overheadPage:document.getElementById('f-overhead-page').value,
+    pageAll:document.getElementById('f-page-all').value,
+    leadId:document.getElementById('f-lead-id').value.trim(),
+    username:document.getElementById('f-username').value.trim(),
+    password:document.getElementById('f-password').value.trim(),
+    status:document.getElementById('f-status').value,
+    notes:document.getElementById('f-notes').value.trim(),
+    lat:geocodedLat,lng:geocodedLng
+  };
   var all=loadData();
   if(editingId){var idx=all.findIndex(i=>i.id===editingId);all[idx]=Object.assign({},all[idx],data);saveData(all);renderAll();closeModal();openDetail(editingId);}
   else{var nid=Date.now();all.push(Object.assign({id:nid},data));saveData(all);renderAll();closeModal();}
